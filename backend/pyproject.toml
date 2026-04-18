@@ -1,0 +1,33 @@
+[project]
+name = "cs-agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi>=0.136.0",
+    "openai>=2.32.0",
+    "openai-agents>=0.14.2",
+    "tenacity>=9.1.4",
+]
+
+[tool.uv]
+package = true
+
+[dependency-groups]
+dev = [
+    "docker>=7.1.0",
+    "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.11",
+]
+
+[tool.coverage.run]
+source = ["."]
+relative_files = true
+omit = [
+    "tests/*"
+]
+
+[tool.coverage.xml]
+output = "coverage.xml"
