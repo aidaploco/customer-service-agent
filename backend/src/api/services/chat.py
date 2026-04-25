@@ -10,10 +10,13 @@ logger = get_logger(__name__)
 
 
 class ChatService:
+    """Orchestrates agent execution for a single chat turn."""
+
     def __init__(self) -> None:
         self._agent = create_supervisor_agent()
 
     async def process_message(self, session_id: str, message: str) -> ChatResponse:
+        """Run the agent on the given message and return the response."""
         start = time.perf_counter()
         result = await Runner.run(starting_agent=self._agent, input=message)
         duration_ms = (time.perf_counter() - start) * 1000

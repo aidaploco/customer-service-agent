@@ -6,6 +6,7 @@ from agents import Agent, RunContextWrapper
 
 
 def get_intent_instructions(ctx: RunContextWrapper[None], agent: Agent[None]) -> str:
+    """Return the system prompt for the supervisor agent."""
     return dedent("""
         You are Zara, a friendly customer service assistant for Brightloop — a modern SaaS
         platform that helps teams manage projects, automate workflows, and track business metrics.

@@ -5,6 +5,7 @@ from llm.openai import get_openai_model
 
 
 def create_supervisor_agent() -> Agent[None]:
+    """Instantiate the supervisor agent that detects intent and routes to domain agents."""
     return Agent[None](
         name="Supervisor",
         handoff_description="Greets the customer, detects their intent, and routes to the appropriate domain agent.",

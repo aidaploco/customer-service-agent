@@ -4,6 +4,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    """Application configuration loaded from environment variables and .env file."""
+
     model_config = SettingsConfigDict(env_file=(".env", "../.env"), extra="ignore")
 
     openai_api_key: str
@@ -14,4 +16,5 @@ class Settings(BaseSettings):
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
+    """Return the cached application settings singleton."""
     return Settings()
