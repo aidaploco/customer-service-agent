@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends
 
 from api.schemas.chat import ChatRequest, ChatResponse
 from api.services.chat import ChatService
+from store.redis_store import get_redis_store
 
 router = APIRouter()
 
@@ -11,7 +12,7 @@ router = APIRouter()
 @lru_cache(maxsize=1)
 def get_chat_service() -> ChatService:
     """Return the ChatService singleton."""
-    return ChatService()
+    return ChatService(store=get_redis_store())
 
 
 @router.post("/chat", response_model=ChatResponse)

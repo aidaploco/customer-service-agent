@@ -6,14 +6,22 @@ from fastapi.testclient import TestClient
 from api.app import app
 from api.middleware.request_id import REQUEST_ID_HEADER
 from api.routes.chat import get_chat_service
+from api.schemas.conversation import ConversationState
 from api.services.chat import ChatService
 
 
 @pytest.fixture
-def mock_service(openai_env):
+def mock_store() -> AsyncMock:
+    store = AsyncMock()
+    store.get_or_create.return_value = ConversationState(session_id="s1")
+    return store
+
+
+@pytest.fixture
+def mock_service(openai_env, mock_store):
     """ChatService with all external deps mocked."""
     with patch("api.services.chat.create_supervisor_agent", return_value=MagicMock()):
-        service = ChatService()
+        service = ChatService(store=mock_store)
     return service
 
 
@@ -30,6 +38,10 @@ def mock_runner_result():
     result = MagicMock()
     result.final_output = "Hello! I'm Zara, how can I help?"
     result.last_agent.name = "Supervisor"
+    result.to_input_list.return_value = [
+        {"role": "user", "content": "Hi"},
+        {"role": "assistant", "content": "Hello! I'm Zara, how can I help?"},
+    ]
     return result
 
 
@@ -43,6 +55,7 @@ def test_chat_response_shape(client, mock_runner_result):
     with patch("api.services.chat.Runner.run", new_callable=AsyncMock, return_value=mock_runner_result):
         response = client.post("/api/v1/chat", json={"session_id": "s1", "message": "Hi"})
     body = response.json()
+    assert body["session_id"] == "s1"
     assert body["message"] == "Hello! I'm Zara, how can I help?"
     assert body["agent"] == "Supervisor"
 
