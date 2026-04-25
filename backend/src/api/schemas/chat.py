@@ -11,5 +11,6 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     """Agent response returned to the client."""
 
+    session_id: str
     message: str
     agent: str

@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     openai_model: str = "gpt-4o"
     log_level: str = "DEBUG"
     api_prefix: str = "/api/v1"
+    redis_url: str = "redis://localhost:6379"
+    session_ttl_seconds: int = 3600
 
 
 @lru_cache(maxsize=1)
