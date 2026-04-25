@@ -1,3 +1,3 @@
-from .openai import OpenAIClient
+from .openai import get_openai_model
 
-__all__ = ["OpenAIClient"]
+__all__ = ["get_openai_model"]
