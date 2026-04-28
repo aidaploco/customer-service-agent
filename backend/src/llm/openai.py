@@ -16,4 +16,6 @@ def _get_async_client() -> AsyncOpenAI:
 
 def get_openai_model() -> OpenAIResponsesModel:
     """Return an OpenAIResponsesModel ready to pass to an Agent."""
-    return OpenAIResponsesModel(model=get_settings().openai_model, openai_client=_get_async_client())
+    return OpenAIResponsesModel(
+        model=get_settings().openai_model, openai_client=_get_async_client()
+    )

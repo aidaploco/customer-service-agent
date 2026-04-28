@@ -46,14 +46,26 @@ def mock_runner_result():
 
 
 def test_chat_returns_200(client, mock_runner_result):
-    with patch("api.services.chat.Runner.run", new_callable=AsyncMock, return_value=mock_runner_result):
-        response = client.post("/api/v1/chat", json={"session_id": "s1", "message": "Hi"})
+    with patch(
+        "api.services.chat.Runner.run",
+        new_callable=AsyncMock,
+        return_value=mock_runner_result,
+    ):
+        response = client.post(
+            "/api/v1/chat", json={"session_id": "s1", "message": "Hi"}
+        )
     assert response.status_code == 200
 
 
 def test_chat_response_shape(client, mock_runner_result):
-    with patch("api.services.chat.Runner.run", new_callable=AsyncMock, return_value=mock_runner_result):
-        response = client.post("/api/v1/chat", json={"session_id": "s1", "message": "Hi"})
+    with patch(
+        "api.services.chat.Runner.run",
+        new_callable=AsyncMock,
+        return_value=mock_runner_result,
+    ):
+        response = client.post(
+            "/api/v1/chat", json={"session_id": "s1", "message": "Hi"}
+        )
     body = response.json()
     assert body["session_id"] == "s1"
     assert body["message"] == "Hello! I'm Zara, how can I help?"
@@ -71,13 +83,23 @@ def test_chat_missing_session_id_returns_422(client):
 
 
 def test_request_id_present_in_response(client, mock_runner_result):
-    with patch("api.services.chat.Runner.run", new_callable=AsyncMock, return_value=mock_runner_result):
-        response = client.post("/api/v1/chat", json={"session_id": "s1", "message": "Hi"})
+    with patch(
+        "api.services.chat.Runner.run",
+        new_callable=AsyncMock,
+        return_value=mock_runner_result,
+    ):
+        response = client.post(
+            "/api/v1/chat", json={"session_id": "s1", "message": "Hi"}
+        )
     assert REQUEST_ID_HEADER in response.headers
 
 
 def test_client_request_id_is_preserved(client, mock_runner_result):
-    with patch("api.services.chat.Runner.run", new_callable=AsyncMock, return_value=mock_runner_result):
+    with patch(
+        "api.services.chat.Runner.run",
+        new_callable=AsyncMock,
+        return_value=mock_runner_result,
+    ):
         response = client.post(
             "/api/v1/chat",
             json={"session_id": "s1", "message": "Hi"},

@@ -12,7 +12,9 @@ REQUEST_ID_HEADER = "X-Request-ID"
 class RequestIDMiddleware(BaseHTTPMiddleware):
     """Attaches a unique request ID to every request and echoes it in the response."""
 
-    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> Response:
         """Inject X-Request-ID from the incoming header or generate a new UUID."""
         request_id = request.headers.get(REQUEST_ID_HEADER) or str(uuid.uuid4())
         request.state.request_id = request_id
