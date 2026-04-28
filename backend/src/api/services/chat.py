@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 
 from agents import Runner
 
-from agent.supervisor import create_supervisor_agent
+from agent.registry import build_agent_registry
 from api.schemas.chat import ChatResponse
 from store.base import BaseConversationStore
 from utils.logger import get_logger
@@ -15,12 +15,16 @@ class ChatService:
     """Orchestrates agent execution for a single chat turn."""
 
     def __init__(self, store: BaseConversationStore) -> None:
-        self._agent = create_supervisor_agent()
+        self._registry = build_agent_registry()
         self._store = store
 
     async def process_message(self, session_id: str, message: str) -> ChatResponse:
         """Run the agent on the given message and return the response."""
         state = await self._store.get_or_create(session_id)
+
+        starting_agent = self._registry.get(state.current_agent_name)
+        if starting_agent is None:
+            starting_agent = self._registry["Supervisor"]
 
         if state.messages:
             input_ = state.messages + [{"role": "user", "content": message}]
@@ -28,10 +32,11 @@ class ChatService:
             input_ = message
 
         start = time.perf_counter()
-        result = await Runner.run(starting_agent=self._agent, input=input_)
+        result = await Runner.run(starting_agent=starting_agent, input=input_)
         duration_ms = (time.perf_counter() - start) * 1000
 
         state.messages = result.to_input_list()
+        state.current_agent_name = result.last_agent.name
         state.last_activity = datetime.now(timezone.utc)
         await self._store.save(state)
 

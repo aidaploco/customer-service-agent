@@ -18,9 +18,16 @@ def mock_store() -> AsyncMock:
 
 
 @pytest.fixture
-def mock_service(openai_env, mock_store):
+def mock_registry() -> dict:
+    supervisor = MagicMock()
+    supervisor.name = "Supervisor"
+    return {"Supervisor": supervisor}
+
+
+@pytest.fixture
+def mock_service(openai_env, mock_store, mock_registry):
     """ChatService with all external deps mocked."""
-    with patch("api.services.chat.create_supervisor_agent", return_value=MagicMock()):
+    with patch("api.services.chat.build_agent_registry", return_value=mock_registry):
         service = ChatService(store=mock_store)
     return service
 

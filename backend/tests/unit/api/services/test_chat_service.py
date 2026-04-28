@@ -15,9 +15,16 @@ def mock_store() -> AsyncMock:
 
 
 @pytest.fixture
-def service(openai_env, mock_store):
-    """ChatService with supervisor agent creation and store mocked out."""
-    with patch("api.services.chat.create_supervisor_agent", return_value=MagicMock()):
+def mock_registry() -> dict:
+    supervisor = MagicMock()
+    supervisor.name = "Supervisor"
+    return {"Supervisor": supervisor}
+
+
+@pytest.fixture
+def service(openai_env, mock_store, mock_registry):
+    """ChatService with registry and store mocked out."""
+    with patch("api.services.chat.build_agent_registry", return_value=mock_registry):
         yield ChatService(store=mock_store)
 
 
@@ -106,3 +113,57 @@ async def test_process_message_saves_updated_history(
     mock_store.save.assert_called_once()
     saved_state = mock_store.save.call_args[0][0]
     assert saved_state.messages == mock_run_result.to_input_list.return_value
+
+
+async def test_process_message_persists_current_agent_name(
+    service, mock_store, mock_run_result
+):
+    """current_agent_name in state is updated to the last agent after each turn."""
+    mock_run_result.last_agent.name = "Billing"
+    with patch(
+        "api.services.chat.Runner.run",
+        new_callable=AsyncMock,
+        return_value=mock_run_result,
+    ):
+        await service.process_message("session-1", "I have a billing question")
+    saved_state = mock_store.save.call_args[0][0]
+    assert saved_state.current_agent_name == "Billing"
+
+
+async def test_process_message_uses_current_agent_from_state(
+    service, mock_store, mock_registry, mock_run_result
+):
+    """Subsequent turns start from the agent stored in state, not always Supervisor."""
+    billing_agent = MagicMock()
+    billing_agent.name = "Billing"
+    mock_registry["Billing"] = billing_agent
+    mock_store.get_or_create.return_value = ConversationState(
+        session_id="session-1",
+        current_agent_name="Billing",
+        messages=[{"role": "user", "content": "Hi"}],
+    )
+    with patch(
+        "api.services.chat.Runner.run",
+        new_callable=AsyncMock,
+        return_value=mock_run_result,
+    ) as mock_run:
+        await service.process_message("session-1", "What is my invoice?")
+    _, kwargs = mock_run.call_args
+    assert kwargs["starting_agent"] is billing_agent
+
+
+async def test_process_message_falls_back_to_supervisor_for_unknown_agent(
+    service, mock_store, mock_registry, mock_run_result
+):
+    """Falls back to Supervisor if state holds an unrecognised agent name."""
+    mock_store.get_or_create.return_value = ConversationState(
+        session_id="session-1", current_agent_name="UnknownAgent"
+    )
+    with patch(
+        "api.services.chat.Runner.run",
+        new_callable=AsyncMock,
+        return_value=mock_run_result,
+    ) as mock_run:
+        await service.process_message("session-1", "Hi")
+    _, kwargs = mock_run.call_args
+    assert kwargs["starting_agent"] is mock_registry["Supervisor"]
