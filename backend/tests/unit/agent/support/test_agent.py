@@ -32,6 +32,16 @@ def test_agent_instructions_is_callable(support):
     assert callable(support.instructions)
 
 
+def test_agent_has_tools(support):
+    tool_names = {t.name for t in support.tools}
+    assert tool_names == {
+        "get_system_status",
+        "search_knowledge_base",
+        "create_ticket",
+        "get_ticket_status",
+    }
+
+
 def test_agent_no_handoffs_by_default(support):
     assert support.handoffs == []
 

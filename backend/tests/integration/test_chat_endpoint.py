@@ -82,11 +82,29 @@ def test_chat_response_shape(client, mock_runner_result):
 def test_chat_missing_message_returns_422(client):
     response = client.post("/api/v1/chat", json={"session_id": "s1"})
     assert response.status_code == 422
+    body = response.json()
+    assert "error" in body
+    assert "message" in body["error"].lower()
 
 
 def test_chat_missing_session_id_returns_422(client):
     response = client.post("/api/v1/chat", json={"message": "Hi"})
     assert response.status_code == 422
+    body = response.json()
+    assert "error" in body
+    assert "session_id" in body["error"].lower()
+
+
+def test_malformed_json_returns_422_with_friendly_error(client):
+    response = client.post(
+        "/api/v1/chat",
+        content=b'{"session_id": "s1", "message": "say "hello""}',
+        headers={"Content-Type": "application/json"},
+    )
+    assert response.status_code == 422
+    body = response.json()
+    assert "error" in body
+    assert "json" in body["error"].lower()
 
 
 def test_request_id_present_in_response(client, mock_runner_result):

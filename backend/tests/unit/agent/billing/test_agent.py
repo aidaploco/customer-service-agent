@@ -32,6 +32,17 @@ def test_agent_instructions_is_callable(billing):
     assert callable(billing.instructions)
 
 
+def test_agent_has_tools(billing):
+    tool_names = {t.name for t in billing.tools}
+    assert tool_names == {
+        "get_subscription",
+        "get_invoice_history",
+        "update_plan",
+        "request_refund",
+        "cancel_subscription",
+    }
+
+
 def test_agent_no_handoffs_by_default(billing):
     assert billing.handoffs == []
 

@@ -26,8 +26,21 @@ def test_agent_model_settings_temperature(supervisor):
 
 
 def test_agent_model_settings_max_tokens(supervisor):
-    assert supervisor.model_settings.max_tokens == 150
+    assert supervisor.model_settings.max_tokens == 512
 
 
 def test_agent_instructions_is_callable(supervisor):
     assert callable(supervisor.instructions)
+
+
+def test_agent_has_greet_tool(supervisor):
+    tool_names = [t.name for t in supervisor.tools]
+    assert "greet" in tool_names
+
+
+def test_agent_tool_choice_required(supervisor):
+    assert supervisor.model_settings.tool_choice == "required"
+
+
+def test_agent_tool_use_behavior(supervisor):
+    assert supervisor.tool_use_behavior == "stop_on_first_tool"
