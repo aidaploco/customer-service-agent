@@ -13,17 +13,25 @@ app.add_middleware(RequestIDMiddleware)
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(_request: Request, exc: RequestValidationError) -> JSONResponse:
+async def validation_exception_handler(
+    _request: Request, exc: RequestValidationError
+) -> JSONResponse:
     errors = exc.errors()
     if any(e.get("type") == "json_invalid" for e in errors):
         message = "Request body contains invalid JSON. Check for unescaped characters such as quotes."
     else:
-        missing = [" → ".join(str(p) for p in e["loc"]) for e in errors if e.get("type") == "missing"]
+        missing = [
+            " → ".join(str(p) for p in e["loc"])
+            for e in errors
+            if e.get("type") == "missing"
+        ]
         if missing:
             message = f"Missing required field(s): {', '.join(missing)}."
         else:
             message = "Invalid request. Check the request body and try again."
-    return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, content={"error": message})
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, content={"error": message}
+    )
 
 
 settings = get_settings()
