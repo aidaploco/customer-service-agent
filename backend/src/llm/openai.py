@@ -19,3 +19,10 @@ def get_openai_model() -> OpenAIResponsesModel:
     return OpenAIResponsesModel(
         model=get_settings().openai_model, openai_client=_get_async_client()
     )
+
+
+def get_guardrail_model() -> OpenAIResponsesModel:
+    """Return a model instance for guardrail classifier agents (uses the cheaper guardrail_model)."""
+    return OpenAIResponsesModel(
+        model=get_settings().guardrail_model, openai_client=_get_async_client()
+    )

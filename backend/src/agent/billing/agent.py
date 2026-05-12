@@ -10,6 +10,8 @@ from agent.billing.tools import (
     request_refund,
     update_plan,
 )
+from agent.guardrails.off_topic import off_topic_guardrail
+from agent.guardrails.prompt_injection import prompt_injection_guardrail
 from llm.openai import get_openai_model
 
 
@@ -28,5 +30,6 @@ def create_billing_agent(handoffs: list | None = None) -> Agent[None]:
             request_refund,
             cancel_subscription,
         ],
+        input_guardrails=[off_topic_guardrail, prompt_injection_guardrail],
         handoffs=handoffs or [],
     )

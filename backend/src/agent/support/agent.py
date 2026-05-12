@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from agents import Agent, ModelSettings
 
+from agent.guardrails.off_topic import off_topic_guardrail
+from agent.guardrails.prompt_injection import prompt_injection_guardrail
 from agent.support.instructions import get_support_instructions
 from agent.support.tools import (
     create_ticket,
@@ -26,5 +28,6 @@ def create_support_agent(handoffs: list | None = None) -> Agent[None]:
             create_ticket,
             get_ticket_status,
         ],
+        input_guardrails=[off_topic_guardrail, prompt_injection_guardrail],
         handoffs=handoffs or [],
     )

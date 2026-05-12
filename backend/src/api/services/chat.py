@@ -1,8 +1,13 @@
 import time
 from datetime import datetime, timezone
 
-from agents import Runner
+from agents import InputGuardrailTripwireTriggered, Runner
 
+from agent.guardrails.responses import (
+    log_all_passed,
+    log_guardrail_trip,
+    refusal_message,
+)
 from agent.registry import build_agent_registry
 from api.schemas.chat import ChatResponse
 from store.base import BaseConversationStore
@@ -32,9 +37,24 @@ class ChatService:
             input_ = message
 
         start = time.perf_counter()
-        result = await Runner.run(starting_agent=starting_agent, input=input_)
+        try:
+            result = await Runner.run(starting_agent=starting_agent, input=input_)
+        except InputGuardrailTripwireTriggered as exc:
+            gr = exc.guardrail_result
+            refusal = refusal_message(gr.guardrail.get_name())
+            log_guardrail_trip(logger, session_id, gr)
+            state.messages = list(state.messages) + [
+                {"role": "user", "content": message},
+                {"role": "assistant", "content": refusal},
+            ]
+            state.last_activity = datetime.now(timezone.utc)
+            await self._store.save(state)
+            return ChatResponse(
+                session_id=session_id, message=refusal, agent="Supervisor"
+            )
         duration_ms = (time.perf_counter() - start) * 1000
 
+        log_all_passed(logger, session_id, result.input_guardrail_results)
         state.messages = result.to_input_list()
         state.current_agent_name = result.last_agent.name
         state.last_activity = datetime.now(timezone.utc)
