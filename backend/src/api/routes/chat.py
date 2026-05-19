@@ -2,7 +2,7 @@ from functools import lru_cache
 
 from fastapi import APIRouter, Depends
 
-from api.schemas.chat import ChatRequest, ChatResponse
+from api.schemas.chat import AgentInfo, ChatRequest, ChatResponse
 from api.services.chat import ChatService
 from store.redis_store import get_redis_store
 
@@ -13,6 +13,14 @@ router = APIRouter()
 def get_chat_service() -> ChatService:
     """Return the ChatService singleton."""
     return ChatService(store=get_redis_store())
+
+
+@router.get("/agents", response_model=list[AgentInfo])
+async def get_agents(
+    service: ChatService = Depends(get_chat_service),
+) -> list[AgentInfo]:
+    """Return the static agent registry — call once on frontend mount."""
+    return service.agents
 
 
 @router.post("/chat", response_model=ChatResponse)

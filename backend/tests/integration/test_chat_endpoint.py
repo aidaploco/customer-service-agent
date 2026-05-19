@@ -21,6 +21,9 @@ def mock_store() -> AsyncMock:
 def mock_registry() -> dict:
     supervisor = MagicMock()
     supervisor.name = "Supervisor"
+    supervisor.handoff_description = "Routes to the right agent."
+    supervisor.tools = []
+    supervisor.handoffs = []
     return {"Supervisor": supervisor}
 
 
@@ -49,6 +52,8 @@ def mock_runner_result():
         {"role": "user", "content": "Hi"},
         {"role": "assistant", "content": "Hello! I'm Zara, how can I help?"},
     ]
+    result.input_guardrail_results = []
+    result.new_items = []
     return result
 
 
@@ -76,7 +81,7 @@ def test_chat_response_shape(client, mock_runner_result):
     body = response.json()
     assert body["session_id"] == "s1"
     assert body["message"] == "Hello! I'm Zara, how can I help?"
-    assert body["agent"] == "Supervisor"
+    assert body["agent"]["name"] == "Supervisor"
 
 
 def test_chat_missing_message_returns_422(client):
