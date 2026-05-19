@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     guardrail_model: str = "gpt-4o-mini"
     embedding_model: str = "text-embedding-3-small"
     embedding_dim: int = 1536
+    max_message_length: int = 1000
     log_level: str = "DEBUG"
     api_prefix: str = "/api/v1"
     redis_url: str = "redis://localhost:6379"

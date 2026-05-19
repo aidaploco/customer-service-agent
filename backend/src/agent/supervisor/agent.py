@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from agents import Agent, ModelSettings
 
+from agent.guardrails.message_length import message_length_guardrail
 from agent.guardrails.off_topic import off_topic_guardrail
 from agent.guardrails.prompt_injection import prompt_injection_guardrail
 from agent.supervisor.instructions import get_intent_instructions
@@ -24,6 +25,10 @@ def create_supervisor_agent(handoffs: list | None = None) -> Agent[None]:
         ),
         tools=[greet],
         tool_use_behavior="stop_on_first_tool",
-        input_guardrails=[off_topic_guardrail, prompt_injection_guardrail],
+        input_guardrails=[
+            message_length_guardrail,
+            off_topic_guardrail,
+            prompt_injection_guardrail,
+        ],
         handoffs=handoffs or [],
     )

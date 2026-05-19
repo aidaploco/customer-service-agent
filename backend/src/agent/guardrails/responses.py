@@ -4,12 +4,18 @@ import logging
 
 from agents import InputGuardrailResult
 
+from config import get_settings
+
 _REFUSAL_MESSAGES: dict[str, str] = {
     "off_topic_guardrail": (
         "I can only help with Brightloop billing and support topics. "
         "Is there anything along those lines I can assist you with?"
     ),
     "prompt_injection_guardrail": "I'm not able to process that request.",
+    "message_length_guardrail": (
+        f"Your message is too long. Please keep it under "
+        f"{get_settings().max_message_length} characters and try again."
+    ),
 }
 _FALLBACK_REFUSAL = "I'm not able to process that request."
 
