@@ -1,7 +1,5 @@
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from agent.guardrails.message_length import message_length_guardrail
 
 
