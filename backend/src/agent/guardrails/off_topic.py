@@ -34,6 +34,8 @@ def _get_off_topic_agent() -> Agent:
             Set triggered=True when the message topic is clearly unrelated to:
             - Brightloop product support (billing, subscriptions, invoices, payments,
               plan upgrades, technical issues, API, webhooks, integrations, bugs, accounts)
+            - General questions about Brightloop (company history, founding, team, product
+              features, pricing, plans, security, compliance, SLA, uptime)
             - Greetings or vague requests that could be about Brightloop
 
             Examples that MUST return triggered=True:
@@ -42,7 +44,7 @@ def _get_off_topic_agent() -> Agent:
             - General knowledge ("what is the capital of France", "what is 2+2")
             - Personal tasks ("write an email to my boss", "tell me a joke")
 
-            Set triggered=False only when the message is clearly about Brightloop or software support.
+            Set triggered=False when the message is about Brightloop, software support, or is a greeting / vague opener that could be the start of a support conversation.
         """).strip(),
         output_type=_OffTopicResult,
         model=get_guardrail_model(),

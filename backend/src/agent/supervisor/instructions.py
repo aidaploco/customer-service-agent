@@ -28,4 +28,5 @@ def get_intent_instructions(_ctx: RunContextWrapper[None], _agent: Agent[None]) 
         Route to:
         - Billing agent: subscription plans, invoices, payments, upgrades, downgrades, cancellations
         - Support agent: bugs, API questions, integrations, performance issues, feature usage
+        - General agent: company background, product overview, pricing questions, security, compliance, SLA
     """).strip()

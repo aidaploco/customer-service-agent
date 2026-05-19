@@ -11,12 +11,13 @@ def registry(openai_env):
         patch("agent.supervisor.agent.get_openai_model", return_value=None),
         patch("agent.billing.agent.get_openai_model", return_value=None),
         patch("agent.support.agent.get_openai_model", return_value=None),
+        patch("agent.general.agent.get_openai_model", return_value=None),
     ):
         return build_agent_registry()
 
 
 def test_registry_contains_all_agents(registry):
-    assert set(registry.keys()) == {"Supervisor", "Billing", "Support"}
+    assert set(registry.keys()) == {"Supervisor", "Billing", "Support", "General"}
 
 
 def test_agent_names_match_keys(registry):
@@ -32,6 +33,16 @@ def test_supervisor_routes_to_billing(registry):
 def test_supervisor_routes_to_support(registry):
     handoff_names = {h.name for h in registry["Supervisor"].handoffs}
     assert "Support" in handoff_names
+
+
+def test_supervisor_routes_to_general(registry):
+    handoff_names = {h.name for h in registry["Supervisor"].handoffs}
+    assert "General" in handoff_names
+
+
+def test_general_returns_to_supervisor(registry):
+    handoff_names = {h.name for h in registry["General"].handoffs}
+    assert "Supervisor" in handoff_names
 
 
 def test_billing_returns_to_supervisor(registry):

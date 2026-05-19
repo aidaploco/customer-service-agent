@@ -11,10 +11,13 @@ class Settings(BaseSettings):
     openai_api_key: str
     openai_model: str = "gpt-4o"
     guardrail_model: str = "gpt-4o-mini"
+    embedding_model: str = "text-embedding-3-small"
+    embedding_dim: int = 1536
     log_level: str = "DEBUG"
     api_prefix: str = "/api/v1"
     redis_url: str = "redis://localhost:6379"
     session_ttl_seconds: int = 3600
+    postgres_url: str = "postgresql://brightloop:brightloop@localhost:5432/brightloop"
 
 
 @lru_cache(maxsize=1)

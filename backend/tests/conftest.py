@@ -1,17 +1,17 @@
 import pytest
 
 from config import get_settings
-from llm.openai import _get_async_client
+from llm.openai import get_async_client
 
 
 @pytest.fixture(autouse=True)
 def clear_caches():
     """Clear all lru_cache singletons between tests to prevent state leaking."""
     get_settings.cache_clear()
-    _get_async_client.cache_clear()
+    get_async_client.cache_clear()
     yield
     get_settings.cache_clear()
-    _get_async_client.cache_clear()
+    get_async_client.cache_clear()
 
 
 @pytest.fixture

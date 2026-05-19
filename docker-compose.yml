@@ -1,8 +1,24 @@
 services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: brightloop
+      POSTGRES_PASSWORD: brightloop
+      POSTGRES_DB: brightloop
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U brightloop"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   redis:
     image: redis:7-alpine
     ports:
-      - "127.0.0.1:6379:6379"
+      - "6379:6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -15,19 +31,22 @@ services:
     build:
       context: ./backend
     ports:
-      - "127.0.0.1:8000:8000"
+      - "8000:8000"
     env_file:
       - .env
     environment:
       REDIS_URL: redis://redis:6379
+      POSTGRES_URL: postgresql://brightloop:brightloop@postgres:5432/brightloop
     depends_on:
       redis:
+        condition: service_healthy
+      postgres:
         condition: service_healthy
 
   redisinsight:
     image: redis/redisinsight:latest
     ports:
-      - "127.0.0.1:5540:5540"
+      - "5540:5540"
     volumes:
       - redisinsight_data:/data
     depends_on:
@@ -36,3 +55,4 @@ services:
 volumes:
   redis_data:
   redisinsight_data:
+  postgres_data:
