@@ -9,7 +9,9 @@ from store.vector_store import search_chunks
 
 async def _search_company_info(query: str) -> str:
     client = get_async_client()
-    response = await client.embeddings.create(model=get_settings().embedding_model, input=query)
+    response = await client.embeddings.create(
+        model=get_settings().embedding_model, input=query
+    )
     chunks = await search_chunks(response.data[0].embedding, top_k=4)
     if not chunks:
         return "No information found for that query. Suggest the customer visit brightloop.io or contact support."

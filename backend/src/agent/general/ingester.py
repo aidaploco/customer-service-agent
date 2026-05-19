@@ -45,7 +45,9 @@ async def ingest_changed() -> None:
             continue
 
         chunks = _chunk_markdown(md_file.read_text())
-        response = await client.embeddings.create(model=get_settings().embedding_model, input=chunks)
+        response = await client.embeddings.create(
+            model=get_settings().embedding_model, input=chunks
+        )
         embeddings = [item.embedding for item in response.data]
 
         records = [
@@ -60,4 +62,6 @@ async def ingest_changed() -> None:
         ]
 
         await replace_source_chunks(md_file.name, records)
-        _logger.info("knowledge ingested source=%s chunks=%d", md_file.name, len(chunks))
+        _logger.info(
+            "knowledge ingested source=%s chunks=%d", md_file.name, len(chunks)
+        )

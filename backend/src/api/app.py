@@ -19,7 +19,9 @@ async def lifespan(_app: FastAPI):
     try:
         await ingest_changed()
     except Exception:
-        _logger.exception("Knowledge ingestion failed at startup — General agent will not answer questions")
+        _logger.exception(
+            "Knowledge ingestion failed at startup — General agent will not answer questions"
+        )
     yield
 
 
