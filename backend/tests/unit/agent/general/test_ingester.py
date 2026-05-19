@@ -1,7 +1,5 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import pytest
-
 from agent.general.ingester import _chunk_markdown, _file_hash, ingest_changed
 
 
