@@ -21,8 +21,8 @@ def create_general_agent(handoffs: list | None = None) -> Agent[None]:
         tools=[search_company_info],
         input_guardrails=[
             message_length_guardrail,
-            off_topic_guardrail,
             prompt_injection_guardrail,
+            off_topic_guardrail,
         ],
         handoffs=handoffs or [],
     )

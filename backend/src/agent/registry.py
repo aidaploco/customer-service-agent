@@ -28,7 +28,7 @@ def build_agent_registry() -> dict[str, Agent[None]]:
 
     return {
         supervisor.name: supervisor,
-        billing.name: billing,
-        support.name: support,
         general.name: general,
+        support.name: support,
+        billing.name: billing,
     }

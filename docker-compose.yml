@@ -43,6 +43,16 @@ services:
       postgres:
         condition: service_healthy
 
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      API_BASE_URL: http://backend:8000
+    depends_on:
+      - backend
+
   redisinsight:
     image: redis/redisinsight:latest
     ports:

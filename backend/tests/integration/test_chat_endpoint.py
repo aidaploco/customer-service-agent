@@ -13,7 +13,9 @@ from api.services.chat import ChatService
 @pytest.fixture
 def mock_store() -> AsyncMock:
     store = AsyncMock()
-    store.get_or_create.return_value = ConversationState(session_id="s1")
+    store.get_or_create.return_value = ConversationState(
+        session_id="00000000-0000-4000-8000-000000000001"
+    )
     return store
 
 
@@ -64,7 +66,11 @@ def test_chat_returns_200(client, mock_runner_result):
         return_value=mock_runner_result,
     ):
         response = client.post(
-            "/api/v1/chat", json={"session_id": "s1", "message": "Hi"}
+            "/api/v1/chat",
+            json={
+                "session_id": "00000000-0000-4000-8000-000000000001",
+                "message": "Hi",
+            },
         )
     assert response.status_code == 200
 
@@ -76,16 +82,22 @@ def test_chat_response_shape(client, mock_runner_result):
         return_value=mock_runner_result,
     ):
         response = client.post(
-            "/api/v1/chat", json={"session_id": "s1", "message": "Hi"}
+            "/api/v1/chat",
+            json={
+                "session_id": "00000000-0000-4000-8000-000000000001",
+                "message": "Hi",
+            },
         )
     body = response.json()
-    assert body["session_id"] == "s1"
+    assert body["session_id"] == "00000000-0000-4000-8000-000000000001"
     assert body["message"] == "Hello! I'm Zara, how can I help?"
     assert body["agent"]["name"] == "Supervisor"
 
 
 def test_chat_missing_message_returns_422(client):
-    response = client.post("/api/v1/chat", json={"session_id": "s1"})
+    response = client.post(
+        "/api/v1/chat", json={"session_id": "00000000-0000-4000-8000-000000000001"}
+    )
     assert response.status_code == 422
     body = response.json()
     assert "error" in body
@@ -103,7 +115,7 @@ def test_chat_missing_session_id_returns_422(client):
 def test_malformed_json_returns_422_with_friendly_error(client):
     response = client.post(
         "/api/v1/chat",
-        content=b'{"session_id": "s1", "message": "say "hello""}',
+        content=b'{"session_id": "00000000-0000-4000-8000-000000000001", "message": "say "hello""}',
         headers={"Content-Type": "application/json"},
     )
     assert response.status_code == 422
@@ -119,7 +131,11 @@ def test_request_id_present_in_response(client, mock_runner_result):
         return_value=mock_runner_result,
     ):
         response = client.post(
-            "/api/v1/chat", json={"session_id": "s1", "message": "Hi"}
+            "/api/v1/chat",
+            json={
+                "session_id": "00000000-0000-4000-8000-000000000001",
+                "message": "Hi",
+            },
         )
     assert REQUEST_ID_HEADER in response.headers
 
@@ -132,7 +148,10 @@ def test_client_request_id_is_preserved(client, mock_runner_result):
     ):
         response = client.post(
             "/api/v1/chat",
-            json={"session_id": "s1", "message": "Hi"},
+            json={
+                "session_id": "00000000-0000-4000-8000-000000000001",
+                "message": "Hi",
+            },
             headers={REQUEST_ID_HEADER: "my-trace-id"},
         )
     assert response.headers[REQUEST_ID_HEADER] == "my-trace-id"
