@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from agents import Agent, InputGuardrailTripwireTriggered, Runner
 from agents.guardrail import InputGuardrailResult
 from agents.items import HandoffOutputItem, RunItem, ToolCallItem, ToolCallOutputItem
+from opentelemetry import trace
 
 from agent.guardrails.responses import (
     log_all_passed,
@@ -15,7 +16,8 @@ from api.schemas.chat import AgentEvent, AgentInfo, ChatResponse, GuardrailResul
 from store.base import BaseConversationStore
 from utils.logger import get_logger
 
-logger = get_logger(__name__)
+_logger = get_logger(__name__)
+_tracer = trace.get_tracer(__name__)
 
 
 def _build_agents_lookup(registry: dict[str, Agent[None]]) -> dict[str, AgentInfo]:
@@ -102,34 +104,44 @@ class ChatService:
             input_ = message
 
         start = time.perf_counter()
-        try:
-            result = await Runner.run(starting_agent=starting_agent, input=input_)
-        except InputGuardrailTripwireTriggered as exc:
-            gr = exc.guardrail_result
-            refusal = refusal_message(gr.guardrail.get_name())
-            log_guardrail_trip(logger, session_id, gr)
-            state.messages = list(state.messages) + [
-                {"role": "user", "content": message},
-                {"role": "assistant", "content": refusal},
-            ]
-            state.last_activity = datetime.now(timezone.utc)
-            await self._store.save(state)
-            return ChatResponse(
-                session_id=session_id,
-                message=refusal,
-                agent=self._agents_lookup["Supervisor"],
-                guardrails=_extract_triggered_guardrails([gr]),
-                events=[],
-            )
+        with _tracer.start_as_current_span(
+            "chat_session",
+            attributes={
+                "openinference.span.kind": "CHAIN",
+                "input.value": message,
+                "session.id": session_id,
+            },
+        ) as span:
+            try:
+                result = await Runner.run(starting_agent=starting_agent, input=input_)
+            except InputGuardrailTripwireTriggered as exc:
+                gr = exc.guardrail_result
+                refusal = refusal_message(gr.guardrail.get_name())
+                span.set_attribute("output.value", refusal)
+                log_guardrail_trip(_logger, session_id, gr)
+                state.messages = list(state.messages) + [
+                    {"role": "user", "content": message},
+                    {"role": "assistant", "content": refusal},
+                ]
+                state.last_activity = datetime.now(timezone.utc)
+                await self._store.save(state)
+                return ChatResponse(
+                    session_id=session_id,
+                    message=refusal,
+                    agent=self._agents_lookup["Supervisor"],
+                    guardrails=_extract_triggered_guardrails([gr]),
+                    events=[],
+                )
+            span.set_attribute("output.value", result.final_output)
         duration_ms = (time.perf_counter() - start) * 1000
 
-        log_all_passed(logger, session_id, result.input_guardrail_results)
+        log_all_passed(_logger, session_id, result.input_guardrail_results)
         state.messages = result.to_input_list()
         state.current_agent_name = result.last_agent.name
         state.last_activity = datetime.now(timezone.utc)
         await self._store.save(state)
 
-        logger.info(
+        _logger.info(
             "session=%s agent=%s duration=%.1fms",
             session_id,
             result.last_agent.name,

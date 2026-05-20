@@ -9,6 +9,7 @@ from api.middleware.request_id import RequestIDMiddleware
 from api.routes.chat import router as chat_router
 from api.routes.health import router as health_router
 from config import get_settings
+from observability import setup_tracing
 from utils.logger import get_logger
 
 _logger = get_logger(__name__)
@@ -16,6 +17,12 @@ _logger = get_logger(__name__)
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
+    try:
+        setup_tracing()
+    except Exception:
+        _logger.exception(
+            "Phoenix tracing setup failed — continuing without observability"
+        )
     try:
         await ingest_changed()
     except Exception:

@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379"
     session_ttl_seconds: int = 3600
     postgres_url: str = "postgresql://brightloop:brightloop@localhost:5432/brightloop"
+    phoenix_collector_endpoint: str | None = None
 
 
 @lru_cache(maxsize=1)
