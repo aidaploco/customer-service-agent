@@ -5,6 +5,7 @@ from textwrap import dedent
 from agents import (
     Agent,
     GuardrailFunctionOutput,
+    RunConfig,
     RunContextWrapper,
     Runner,
     input_guardrail,
@@ -12,6 +13,7 @@ from agents import (
 from pydantic import BaseModel
 
 from agent.guardrails import _last_user_message
+from agent.guardrails.tracing import set_guardrail_span_attributes
 from llm.openai import get_guardrail_model
 
 
@@ -62,8 +64,16 @@ async def prompt_injection_guardrail(
         starting_agent=_get_injection_agent(),
         input=f"<msg>{message}</msg>",
         context=ctx.context,
+        run_config=RunConfig(tracing_disabled=True),
     )
     output: _InjectionResult = result.final_output
+    set_guardrail_span_attributes(
+        name="prompt_injection_guardrail",
+        kind="input",
+        passed=not output.triggered,
+        tripwire_triggered=output.triggered,
+        reasoning=output.reason,
+    )
     return GuardrailFunctionOutput(
         output_info=output, tripwire_triggered=output.triggered
     )

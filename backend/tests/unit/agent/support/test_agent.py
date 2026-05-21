@@ -42,16 +42,6 @@ def test_agent_has_tools(support):
     }
 
 
-def test_agent_has_off_topic_guardrail(support):
-    names = [g.get_name() for g in support.input_guardrails]
-    assert "off_topic_guardrail" in names
-
-
-def test_agent_has_injection_guardrail(support):
-    names = [g.get_name() for g in support.input_guardrails]
-    assert "prompt_injection_guardrail" in names
-
-
 def test_agent_no_handoffs_by_default(support):
     assert support.handoffs == []
 

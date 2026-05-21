@@ -44,13 +44,3 @@ def test_agent_tool_choice_required(supervisor):
 
 def test_agent_tool_use_behavior(supervisor):
     assert supervisor.tool_use_behavior == "stop_on_first_tool"
-
-
-def test_agent_has_off_topic_guardrail(supervisor):
-    names = [g.get_name() for g in supervisor.input_guardrails]
-    assert "off_topic_guardrail" in names
-
-
-def test_agent_has_injection_guardrail(supervisor):
-    names = [g.get_name() for g in supervisor.input_guardrails]
-    assert "prompt_injection_guardrail" in names

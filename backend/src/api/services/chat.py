@@ -1,11 +1,15 @@
 import time
 from datetime import datetime, timezone
 
-from agents import Agent, InputGuardrailTripwireTriggered, Runner
+import openai
+from agents import Agent, InputGuardrailTripwireTriggered, RunConfig, Runner
 from agents.guardrail import InputGuardrailResult
 from agents.items import HandoffOutputItem, RunItem, ToolCallItem, ToolCallOutputItem
 from opentelemetry import trace
 
+from agent.guardrails.message_length import message_length_guardrail
+from agent.guardrails.off_topic import off_topic_guardrail
+from agent.guardrails.prompt_injection import prompt_injection_guardrail
 from agent.guardrails.responses import (
     log_all_passed,
     log_guardrail_trip,
@@ -90,6 +94,15 @@ class ChatService:
     def agents(self) -> list[AgentInfo]:
         return list(self._agents_lookup.values())
 
+    def _api_error_response(self, session_id: str, message: str) -> ChatResponse:
+        return ChatResponse(
+            session_id=session_id,
+            message=message,
+            agent=self._agents_lookup["Supervisor"],
+            guardrails=[],
+            events=[],
+        )
+
     async def process_message(self, session_id: str, message: str) -> ChatResponse:
         """Run the agent on the given message and return the response."""
         state = await self._store.get_or_create(session_id)
@@ -113,7 +126,18 @@ class ChatService:
             },
         ) as span:
             try:
-                result = await Runner.run(starting_agent=starting_agent, input=input_)
+                result = await Runner.run(
+                    starting_agent=starting_agent,
+                    input=input_,
+                    run_config=RunConfig(
+                        group_id=session_id,
+                        input_guardrails=[
+                            message_length_guardrail,
+                            prompt_injection_guardrail,
+                            off_topic_guardrail,
+                        ],
+                    ),
+                )
             except InputGuardrailTripwireTriggered as exc:
                 gr = exc.guardrail_result
                 refusal = refusal_message(gr.guardrail.get_name())
@@ -131,6 +155,34 @@ class ChatService:
                     agent=self._agents_lookup["Supervisor"],
                     guardrails=_extract_triggered_guardrails([gr]),
                     events=[],
+                )
+            except openai.BadRequestError as exc:
+                _logger.warning("session=%s bad_request: %s", session_id, exc)
+                span.set_status(trace.StatusCode.ERROR, "bad_request")
+                return self._api_error_response(
+                    session_id,
+                    "I wasn't able to process that request. Please try rephrasing.",
+                )
+            except openai.RateLimitError:
+                _logger.warning("session=%s rate_limit_exceeded", session_id)
+                span.set_status(trace.StatusCode.ERROR, "rate_limit")
+                return self._api_error_response(
+                    session_id,
+                    "I'm experiencing high demand right now. Please try again in a moment.",
+                )
+            except openai.APIConnectionError:
+                _logger.warning("session=%s connection_error", session_id)
+                span.set_status(trace.StatusCode.ERROR, "connection_error")
+                return self._api_error_response(
+                    session_id,
+                    "I'm having trouble connecting. Please try again in a moment.",
+                )
+            except openai.APIError as exc:
+                _logger.error("session=%s api_error: %s", session_id, exc)
+                span.set_status(trace.StatusCode.ERROR, "api_error")
+                return self._api_error_response(
+                    session_id,
+                    "Something went wrong on my end. Please try again.",
                 )
             span.set_attribute("output.value", result.final_output)
         duration_ms = (time.perf_counter() - start) * 1000

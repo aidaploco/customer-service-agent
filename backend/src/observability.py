@@ -1,6 +1,5 @@
 from functools import lru_cache
 
-from openinference.instrumentation.openai_agents import OpenAIAgentsInstrumentor
 from phoenix.otel import register
 
 from config import get_settings
@@ -19,6 +18,6 @@ def setup_tracing() -> None:
     register(
         endpoint=settings.phoenix_collector_endpoint,
         project_name="customer-service-agent",
+        auto_instrument=True,
     )
-    OpenAIAgentsInstrumentor().instrument()
     _logger.info("Phoenix tracing enabled → %s", settings.phoenix_collector_endpoint)

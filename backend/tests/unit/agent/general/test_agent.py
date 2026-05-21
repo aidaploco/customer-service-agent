@@ -37,16 +37,6 @@ def test_agent_has_tools(general):
     assert tool_names == {"search_company_info"}
 
 
-def test_agent_has_off_topic_guardrail(general):
-    names = [g.get_name() for g in general.input_guardrails]
-    assert "off_topic_guardrail" in names
-
-
-def test_agent_has_injection_guardrail(general):
-    names = [g.get_name() for g in general.input_guardrails]
-    assert "prompt_injection_guardrail" in names
-
-
 def test_agent_no_handoffs_by_default(general):
     assert general.handoffs == []
 

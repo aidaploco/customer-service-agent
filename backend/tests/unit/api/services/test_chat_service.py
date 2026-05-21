@@ -1,11 +1,17 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import httpx
+import openai
 import pytest
 from agents import InputGuardrailTripwireTriggered
 
 from api.schemas.chat import ChatResponse
 from api.schemas.conversation import ConversationState
 from api.services.chat import ChatService, _build_agents_lookup
+
+_DUMMY_REQUEST = httpx.Request("POST", "https://api.openai.com/v1/chat/completions")
+_DUMMY_RESPONSE_400 = httpx.Response(400, request=_DUMMY_REQUEST)
+_DUMMY_RESPONSE_429 = httpx.Response(429, request=_DUMMY_REQUEST)
 
 
 @pytest.fixture
@@ -235,6 +241,22 @@ async def test_guardrail_trip_appends_exchange_to_history(service, mock_store):
     assert "brightloop" in saved_state.messages[-1]["content"].lower()
 
 
+async def test_run_config_carries_all_guardrails(service, mock_store, mock_run_result):
+    """Guardrail policy is passed via RunConfig, not baked into agent definitions."""
+    with patch(
+        "api.services.chat.Runner.run",
+        new_callable=AsyncMock,
+        return_value=mock_run_result,
+    ) as mock_run:
+        await service.process_message("session-1", "Hi")
+    _, kwargs = mock_run.call_args
+    run_config = kwargs["run_config"]
+    guardrail_names = {g.get_name() for g in run_config.input_guardrails}
+    assert "message_length_guardrail" in guardrail_names
+    assert "prompt_injection_guardrail" in guardrail_names
+    assert "off_topic_guardrail" in guardrail_names
+
+
 async def test_process_message_falls_back_to_supervisor_for_unknown_agent(
     service, mock_store, mock_registry, mock_run_result
 ):
@@ -250,3 +272,72 @@ async def test_process_message_falls_back_to_supervisor_for_unknown_agent(
         await service.process_message("session-1", "Hi")
     _, kwargs = mock_run.call_args
     assert kwargs["starting_agent"] is mock_registry["Supervisor"]
+
+
+# --- API error handling ---
+
+
+@pytest.mark.parametrize(
+    "error",
+    [
+        openai.BadRequestError("bad request", response=_DUMMY_RESPONSE_400, body=None),
+        openai.RateLimitError("rate limit", response=_DUMMY_RESPONSE_429, body=None),
+        openai.APIConnectionError(request=_DUMMY_REQUEST),
+        openai.APIError("api error", request=_DUMMY_REQUEST, body=None),
+    ],
+    ids=["bad_request", "rate_limit", "connection_error", "api_error"],
+)
+async def test_api_error_returns_chat_response(service, mock_store, error):
+    with patch(
+        "api.services.chat.Runner.run",
+        new_callable=AsyncMock,
+        side_effect=error,
+    ):
+        response = await service.process_message("session-1", "Hi")
+    assert isinstance(response, ChatResponse)
+    assert response.session_id == "session-1"
+    assert response.agent.name == "Supervisor"
+
+
+@pytest.mark.parametrize(
+    "error",
+    [
+        openai.BadRequestError("bad request", response=_DUMMY_RESPONSE_400, body=None),
+        openai.RateLimitError("rate limit", response=_DUMMY_RESPONSE_429, body=None),
+        openai.APIConnectionError(request=_DUMMY_REQUEST),
+        openai.APIError("api error", request=_DUMMY_REQUEST, body=None),
+    ],
+    ids=["bad_request", "rate_limit", "connection_error", "api_error"],
+)
+async def test_api_error_does_not_save_state(service, mock_store, error):
+    with patch(
+        "api.services.chat.Runner.run",
+        new_callable=AsyncMock,
+        side_effect=error,
+    ):
+        await service.process_message("session-1", "Hi")
+    mock_store.save.assert_not_called()
+
+
+async def test_bad_request_message_suggests_rephrasing(service, mock_store):
+    with patch(
+        "api.services.chat.Runner.run",
+        new_callable=AsyncMock,
+        side_effect=openai.BadRequestError(
+            "bad request", response=_DUMMY_RESPONSE_400, body=None
+        ),
+    ):
+        response = await service.process_message("session-1", "Hi")
+    assert "rephrasing" in response.message.lower()
+
+
+async def test_rate_limit_message_asks_to_retry(service, mock_store):
+    with patch(
+        "api.services.chat.Runner.run",
+        new_callable=AsyncMock,
+        side_effect=openai.RateLimitError(
+            "rate limit", response=_DUMMY_RESPONSE_429, body=None
+        ),
+    ):
+        response = await service.process_message("session-1", "Hi")
+    assert "try again" in response.message.lower()
