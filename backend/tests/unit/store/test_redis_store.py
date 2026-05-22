@@ -1,6 +1,7 @@
 from unittest.mock import AsyncMock
 
 import pytest
+import redis.asyncio as aioredis
 
 from api.schemas.conversation import ConversationState
 from store.redis_store import RedisConversationStore
@@ -112,3 +113,35 @@ async def test_key_prefix_applied_to_all_operations(
     mock_redis.get.return_value = None
     await store.get_or_create("abc")
     mock_redis.get.assert_called_once_with("custom:abc")
+
+
+class TestRetry:
+    async def test_get_or_create_retries_on_redis_error(
+        self, store: RedisConversationStore, mock_redis: AsyncMock
+    ) -> None:
+        mock_redis.get.side_effect = [
+            aioredis.RedisError("transient"),
+            None,
+        ]
+        state = await store.get_or_create("session-1")
+        assert state.session_id == "session-1"
+        assert mock_redis.get.call_count == 2
+
+    async def test_save_retries_on_redis_error(
+        self, store: RedisConversationStore, mock_redis: AsyncMock
+    ) -> None:
+        mock_redis.setex.side_effect = [
+            aioredis.RedisError("transient"),
+            None,
+        ]
+        state = ConversationState(session_id="session-1")
+        await store.save(state)
+        assert mock_redis.setex.call_count == 2
+
+    async def test_raises_after_max_attempts(
+        self, store: RedisConversationStore, mock_redis: AsyncMock
+    ) -> None:
+        mock_redis.get.side_effect = aioredis.RedisError("persistent")
+        with pytest.raises(aioredis.RedisError):
+            await store.get_or_create("session-1")
+        assert mock_redis.get.call_count == 3

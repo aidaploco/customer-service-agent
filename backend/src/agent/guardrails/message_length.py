@@ -7,7 +7,7 @@ from agent.guardrails.tracing import set_guardrail_span_attributes
 from config import get_settings
 
 
-@input_guardrail(run_in_parallel=False)
+@input_guardrail
 async def message_length_guardrail(
     _ctx: RunContextWrapper[None],
     _agent: Agent[None],

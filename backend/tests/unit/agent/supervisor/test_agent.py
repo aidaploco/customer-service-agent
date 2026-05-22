@@ -8,7 +8,7 @@ from agent.supervisor.agent import create_supervisor_agent
 @pytest.fixture
 def supervisor(openai_env):
     """Create a supervisor agent with a mocked model."""
-    with patch("agent.supervisor.agent.get_openai_model", return_value=None):
+    with patch("agent.supervisor.agent.get_supervisor_model", return_value=None):
         return create_supervisor_agent()
 
 
@@ -22,20 +22,19 @@ def test_agent_handoff_description(supervisor):
 
 
 def test_agent_model_settings_temperature(supervisor):
-    assert supervisor.model_settings.temperature == 0.2
+    assert supervisor.model_settings.temperature == 0.1
 
 
 def test_agent_model_settings_max_tokens(supervisor):
-    assert supervisor.model_settings.max_tokens == 512
+    assert supervisor.model_settings.max_tokens == 150
 
 
 def test_agent_instructions_is_callable(supervisor):
     assert callable(supervisor.instructions)
 
 
-def test_agent_has_greet_tool(supervisor):
-    tool_names = [t.name for t in supervisor.tools]
-    assert "greet" in tool_names
+def test_agent_has_no_tools(supervisor):
+    assert supervisor.tools == []
 
 
 def test_agent_tool_choice_required(supervisor):

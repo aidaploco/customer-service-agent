@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from agent.guardrails import _last_user_message
+from agent.guardrails import _conversation_context, _last_user_message
 from agent.guardrails.off_topic import off_topic_guardrail
 
 
@@ -24,6 +24,52 @@ class TestLastUserMessage:
 
     def test_empty_list_returns_empty(self):
         assert _last_user_message([]) == ""
+
+
+class TestConversationContext:
+    def test_string_input_returns_empty_context_and_message(self):
+        ctx, msg = _conversation_context("Hello")
+        assert ctx == ""
+        assert msg == "Hello"
+
+    def test_empty_list_returns_empty_strings(self):
+        ctx, msg = _conversation_context([])
+        assert ctx == ""
+        assert msg == ""
+
+    def test_extracts_last_user_message(self):
+        input_ = [
+            {"role": "user", "content": "First"},
+            {"role": "assistant", "content": "Response"},
+            {"role": "user", "content": "Second"},
+        ]
+        ctx, msg = _conversation_context(input_)
+        assert msg == "Second"
+
+    def test_conversation_includes_recent_turns(self):
+        input_ = [
+            {"role": "user", "content": "Can I upgrade my plan?"},
+            {"role": "assistant", "content": "Which plan would you like?"},
+            {"role": "user", "content": "business"},
+        ]
+        ctx, msg = _conversation_context(input_)
+        assert msg == "business"
+        assert "Can I upgrade my plan?" in ctx
+        assert "Which plan would you like?" in ctx
+        assert "business" in ctx
+
+    def test_respects_max_turns(self):
+        input_ = [{"role": "user", "content": f"msg{i}"} for i in range(20)]
+        ctx, _ = _conversation_context(input_, max_turns=2)
+        assert "msg0" not in ctx
+
+    def test_skips_non_string_content(self):
+        input_ = [
+            {"role": "user", "content": [{"type": "text", "text": "complex"}]},
+            {"role": "user", "content": "plain"},
+        ]
+        _, msg = _conversation_context(input_)
+        assert msg == "plain"
 
 
 class TestOffTopicGuardrail:
@@ -69,8 +115,35 @@ class TestOffTopicGuardrail:
             "agent.guardrails.off_topic.Runner.run",
             new_callable=AsyncMock,
             return_value=mock_result,
-        ):
+        ) as mock_run:
             output = await off_topic_guardrail.guardrail_function(
                 MagicMock(), MagicMock(), "Tell me a joke"
             )
         assert output.output_info is mock_result.final_output
+
+    async def test_contextual_reply_includes_conversation_in_prompt(
+        self, openai_env, mock_result
+    ):
+        """Short follow-up replies must be evaluated with conversation history, not in isolation."""
+        mock_result.final_output.triggered = False
+        input_ = [
+            {"role": "user", "content": "I want to upgrade my plan"},
+            {
+                "role": "assistant",
+                "content": "Sure! We have Starter, Business, or Enterprise. Which do you want?",
+            },
+            {"role": "user", "content": "business"},
+        ]
+        with patch(
+            "agent.guardrails.off_topic.Runner.run",
+            new_callable=AsyncMock,
+            return_value=mock_result,
+        ) as mock_run:
+            await off_topic_guardrail.guardrail_function(
+                MagicMock(), MagicMock(), input_
+            )
+        _, call_kwargs = mock_run.call_args
+        prompt = call_kwargs["input"]
+        assert "<conversation>" in prompt
+        assert "Which do you want?" in prompt
+        assert "<msg>business</msg>" in prompt

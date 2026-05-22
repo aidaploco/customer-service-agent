@@ -10,6 +10,7 @@ from api.routes.chat import router as chat_router
 from api.routes.health import router as health_router
 from config import get_settings
 from observability import setup_tracing
+from store.vector_store import close_pg_pool, init_pg_pool
 from utils.logger import get_logger
 
 _logger = get_logger(__name__)
@@ -17,6 +18,10 @@ _logger = get_logger(__name__)
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
+    try:
+        await init_pg_pool()
+    except Exception:
+        _logger.exception("Postgres pool init failed — vector search will not work")
     try:
         setup_tracing()
     except Exception:
@@ -30,6 +35,7 @@ async def lifespan(_app: FastAPI):
             "Knowledge ingestion failed at startup — General agent will not answer questions"
         )
     yield
+    await close_pg_pool()
 
 
 app = FastAPI(title="Customer Service Agent", lifespan=lifespan)

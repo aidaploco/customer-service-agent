@@ -7,7 +7,7 @@ from agent.billing.agent import create_billing_agent
 
 @pytest.fixture
 def billing(openai_env):
-    with patch("agent.billing.agent.get_openai_model", return_value=None):
+    with patch("agent.billing.agent.get_domain_model", return_value=None):
         return create_billing_agent()
 
 
@@ -25,7 +25,7 @@ def test_agent_model_settings_temperature(billing):
 
 
 def test_agent_model_settings_max_tokens(billing):
-    assert billing.model_settings.max_tokens == 512
+    assert billing.model_settings.max_tokens == 400
 
 
 def test_agent_instructions_is_callable(billing):
@@ -49,6 +49,6 @@ def test_agent_no_handoffs_by_default(billing):
 
 def test_agent_forwards_handoffs(openai_env):
     dummy = MagicMock()
-    with patch("agent.billing.agent.get_openai_model", return_value=None):
+    with patch("agent.billing.agent.get_domain_model", return_value=None):
         agent = create_billing_agent(handoffs=[dummy])
     assert dummy in agent.handoffs

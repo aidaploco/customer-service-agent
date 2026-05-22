@@ -6,6 +6,7 @@ from pydantic import BaseModel, field_validator
 class AgentInfo(BaseModel):
     name: str
     description: str
+    model: str
     tools: list[str]
     handoffs: list[str]
 

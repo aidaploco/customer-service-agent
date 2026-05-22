@@ -40,9 +40,10 @@ export default function AgentsList({ agents, activeAgent, events }: Props) {
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-500 leading-snug line-clamp-2 mb-2">
+              <p className="text-xs text-slate-500 leading-snug line-clamp-2 mb-1">
                 {agent.description}
               </p>
+              <p className="text-[10px] text-slate-600 font-mono mb-2">{agent.model.replace(/-\d{4}-\d{2}-\d{2}$/, '')}</p>
               <div className="flex flex-wrap gap-1">
                 {agent.tools.map(t => {
                   const active = calledTools.has(`${agent.name}::${t}`)

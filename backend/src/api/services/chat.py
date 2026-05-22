@@ -24,11 +24,17 @@ _logger = get_logger(__name__)
 _tracer = trace.get_tracer(__name__)
 
 
+def _agent_model_name(agent: Agent[None]) -> str:
+    m = agent.model
+    return m if isinstance(m, str) else getattr(m, "model", repr(m))
+
+
 def _build_agents_lookup(registry: dict[str, Agent[None]]) -> dict[str, AgentInfo]:
     return {
         agent.name: AgentInfo(
             name=agent.name,
             description=agent.handoff_description or "",
+            model=_agent_model_name(agent),
             tools=[t.name for t in agent.tools if hasattr(t, "name")],
             handoffs=[h.name for h in agent.handoffs],
         )
@@ -107,12 +113,12 @@ class ChatService:
         """Run the agent on the given message and return the response."""
         state = await self._store.get_or_create(session_id)
 
-        starting_agent = self._registry.get(state.current_agent_name)
-        if starting_agent is None:
-            starting_agent = self._registry["Supervisor"]
+        starting_agent = (
+            self._registry.get(state.current_agent_name) or self._registry["Supervisor"]
+        )
 
         if state.messages:
-            input_ = state.messages + [{"role": "user", "content": message}]
+            input_ = list(state.messages) + [{"role": "user", "content": message}]
         else:
             input_ = message
 
@@ -184,7 +190,11 @@ class ChatService:
                     session_id,
                     "Something went wrong on my end. Please try again.",
                 )
-            span.set_attribute("output.value", result.final_output)
+            reply = (
+                result.final_output
+                or "I'm sorry, I wasn't able to generate a response. Please try again."
+            )
+            span.set_attribute("output.value", reply)
         duration_ms = (time.perf_counter() - start) * 1000
 
         log_all_passed(_logger, session_id, result.input_guardrail_results)
@@ -201,7 +211,7 @@ class ChatService:
         )
         return ChatResponse(
             session_id=session_id,
-            message=result.final_output,
+            message=reply,
             agent=self._agents_lookup[result.last_agent.name],
             guardrails=_extract_triggered_guardrails(result.input_guardrail_results),
             events=_extract_events(result.new_items),

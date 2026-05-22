@@ -31,5 +31,5 @@ def test_covers_billing_topics():
 
 def test_handoff_is_invisible_to_user():
     result = " ".join(_call().split())  # collapse newlines before asserting
-    assert "silently" in result.lower()
+    assert "handoff tool" in result.lower()
     assert "do not mention" in result.lower()

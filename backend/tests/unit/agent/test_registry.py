@@ -8,10 +8,10 @@ from agent.registry import build_agent_registry
 @pytest.fixture
 def registry(openai_env):
     with (
-        patch("agent.supervisor.agent.get_openai_model", return_value=None),
-        patch("agent.billing.agent.get_openai_model", return_value=None),
-        patch("agent.support.agent.get_openai_model", return_value=None),
-        patch("agent.general.agent.get_openai_model", return_value=None),
+        patch("agent.supervisor.agent.get_supervisor_model", return_value=None),
+        patch("agent.billing.agent.get_domain_model", return_value=None),
+        patch("agent.support.agent.get_domain_model", return_value=None),
+        patch("agent.general.agent.get_domain_model", return_value=None),
     ):
         return build_agent_registry()
 

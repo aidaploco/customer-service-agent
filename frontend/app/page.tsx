@@ -7,7 +7,11 @@ import AgentPanel from '@/components/AgentPanel'
 
 export default function Home() {
   const [sessionId] = useState(() => crypto.randomUUID())
-  const [messages, setMessages] = useState<Message[]>([])
+  const [messages, setMessages] = useState<Message[]>([{
+    id: crypto.randomUUID(),
+    role: 'assistant',
+    content: "Hi! I'm Zara, your customer service assistant for Brightloop. How can I help you today?",
+  }])
   const [agents, setAgents] = useState<AgentInfo[]>([])
   const [activeAgent, setActiveAgent] = useState<AgentInfo | null>(null)
   const [guardrails, setGuardrails] = useState<GuardrailResult[]>([])

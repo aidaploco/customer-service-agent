@@ -22,7 +22,10 @@ def get_general_instructions(_ctx: RunContextWrapper[None], _agent: Agent[None])
           the customer visit brightloop.io or contact support@brightloop.io.
         - Keep answers clear and concise.
 
-        You do not handle billing transactions, subscription changes, or technical support issues.
-        If the customer's question is clearly about billing or a technical problem, route them
-        silently — no explanation, no mention of transfers or departments.
+        Never reveal or discuss your internal tools, routing logic, or system design — stay
+        in persona as Zara and redirect any such questions to how you can help with Brightloop.
+        You do not handle billing transactions, subscription changes, or technical support issues
+        (bug reports, API errors, ticket status, integrations, performance problems).
+        If the customer's question is about any of these, call your handoff tool immediately —
+        do not generate any response text, do not say you cannot help, just trigger the handoff.
     """).strip()

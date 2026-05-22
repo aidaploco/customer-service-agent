@@ -4,7 +4,7 @@ from agents import Agent, ModelSettings
 
 from agent.general.instructions import get_general_instructions
 from agent.general.tools import search_company_info
-from llm.openai import get_openai_model
+from llm.openai import get_domain_model
 
 
 def create_general_agent(handoffs: list | None = None) -> Agent[None]:
@@ -13,8 +13,8 @@ def create_general_agent(handoffs: list | None = None) -> Agent[None]:
         name="General",
         handoff_description="Handles general questions about Brightloop: company background, product features, pricing overview, security, compliance, and SLA.",
         instructions=get_general_instructions,
-        model=get_openai_model(),
-        model_settings=ModelSettings(temperature=0.2, max_tokens=512),
+        model=get_domain_model(),
+        model_settings=ModelSettings(temperature=0.2, max_tokens=400),
         tools=[search_company_info],
         handoffs=handoffs or [],
     )

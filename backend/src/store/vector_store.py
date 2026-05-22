@@ -2,8 +2,46 @@ from __future__ import annotations
 
 import psycopg
 from pgvector.psycopg import register_vector_async
+from psycopg_pool import AsyncConnectionPool
 
 from config import get_settings
+from utils.logger import get_logger
+
+_logger = get_logger(__name__)
+
+_pool: AsyncConnectionPool | None = None
+
+
+async def _configure_conn(conn: psycopg.AsyncConnection) -> None:
+    await register_vector_async(conn)
+
+
+async def init_pg_pool() -> None:
+    """Open the shared async connection pool. Call once at startup."""
+    global _pool
+    settings = get_settings()
+    _pool = AsyncConnectionPool(
+        settings.postgres_url,
+        max_size=settings.postgres_pool_size,
+        configure=_configure_conn,
+        open=False,
+    )
+    await _pool.open()
+    _logger.info("Postgres pool opened (max_size=%d)", settings.postgres_pool_size)
+
+
+async def close_pg_pool() -> None:
+    """Close the pool gracefully. Call on shutdown."""
+    global _pool
+    if _pool is not None:
+        await _pool.close()
+        _pool = None
+
+
+def _get_pool() -> AsyncConnectionPool:
+    if _pool is None:
+        raise RuntimeError("Postgres pool not initialized — call init_pg_pool() first")
+    return _pool
 
 
 async def init_db() -> None:
@@ -61,9 +99,7 @@ async def replace_source_chunks(source: str, records: list[dict]) -> None:
 
 async def search_chunks(query_embedding: list[float], top_k: int = 5) -> list[str]:
     """Return top-k chunk contents nearest to query_embedding by cosine distance."""
-    url = get_settings().postgres_url
-    async with await psycopg.AsyncConnection.connect(url) as conn:
-        await register_vector_async(conn)
+    async with _get_pool().connection() as conn:
         async with conn.cursor() as cur:
             await cur.execute(
                 "SELECT content FROM knowledge_chunks ORDER BY embedding <=> %s::vector LIMIT %s",

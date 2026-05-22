@@ -9,12 +9,18 @@ from api.routes.chat import get_chat_service
 from api.schemas.conversation import ConversationState
 from api.services.chat import ChatService
 
+_EXISTING_HISTORY = [
+    {"role": "user", "content": "Hi"},
+    {"role": "assistant", "content": "Hello! I'm Zara, how can I help?"},
+]
+
 
 @pytest.fixture
 def mock_store() -> AsyncMock:
     store = AsyncMock()
     store.get_or_create.return_value = ConversationState(
-        session_id="00000000-0000-4000-8000-000000000001"
+        session_id="00000000-0000-4000-8000-000000000001",
+        messages=_EXISTING_HISTORY,
     )
     return store
 
@@ -24,6 +30,7 @@ def mock_registry() -> dict:
     supervisor = MagicMock()
     supervisor.name = "Supervisor"
     supervisor.handoff_description = "Routes to the right agent."
+    supervisor.model = "gpt-4o-mini"
     supervisor.tools = []
     supervisor.handoffs = []
     return {"Supervisor": supervisor}
