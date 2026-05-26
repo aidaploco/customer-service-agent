@@ -32,4 +32,6 @@ def test_covers_billing_topics():
 def test_handoff_is_invisible_to_user():
     result = " ".join(_call().split())  # collapse newlines before asserting
     assert "handoff tool" in result.lower()
-    assert "does not exist" in result.lower()  # routing is invisible by principle, not forbidden-phrase list
+    assert (
+        "does not exist" in result.lower()
+    )  # routing is invisible by principle, not forbidden-phrase list

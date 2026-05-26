@@ -31,9 +31,7 @@ async def test_no_results_returns_fallback(openai_env):
             new_callable=AsyncMock,
             return_value=_EMBEDDING,
         ),
-        patch(
-            "rag.tools.search_chunks", new_callable=AsyncMock, return_value=[]
-        ),
+        patch("rag.tools.search_chunks", new_callable=AsyncMock, return_value=[]),
     ):
         result = await _search_company_info("something obscure")
     assert "No information found" in result

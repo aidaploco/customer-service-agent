@@ -79,13 +79,16 @@ def main():
     results = asyncio.run(_run())
 
     s = get_settings()
-    report = build_report(results, config={
-        "supervisor_model": s.supervisor_model,
-        "billing_model": s.billing_model,
-        "support_model": s.support_model,
-        "guardrail_model": s.guardrail_model,
-        "eval_judge_model": s.eval_judge_model,
-    })
+    report = build_report(
+        results,
+        config={
+            "supervisor_model": s.supervisor_model,
+            "billing_model": s.billing_model,
+            "support_model": s.support_model,
+            "guardrail_model": s.guardrail_model,
+            "eval_judge_model": s.eval_judge_model,
+        },
+    )
     print_report(report)
     save_report(report, args.output)
 
