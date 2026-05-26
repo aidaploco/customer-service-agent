@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from agent.general.ingester import ingest_changed
+from rag.ingester import ingest_changed
 from api.middleware.request_id import RequestIDMiddleware
 from api.routes.chat import router as chat_router
 from api.routes.health import router as health_router
@@ -32,7 +32,7 @@ async def lifespan(_app: FastAPI):
         await ingest_changed()
     except Exception:
         _logger.exception(
-            "Knowledge ingestion failed at startup — General agent will not answer questions"
+            "Knowledge ingestion failed at startup — Support agent will not answer general questions"
         )
     yield
     await close_pg_pool()

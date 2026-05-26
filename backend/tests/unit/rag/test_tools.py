@@ -1,8 +1,6 @@
 from unittest.mock import AsyncMock, patch
 
-import pytest
-
-from agent.general.tools import _search_company_info
+from rag.tools import _search_company_info
 
 _EMBEDDING = [0.1] * 1536
 
@@ -11,12 +9,12 @@ async def test_returns_joined_chunks(openai_env):
     chunks = ["Brightloop was founded in 2021.", "Headquartered in San Francisco."]
     with (
         patch(
-            "agent.general.tools.get_embedding",
+            "rag.tools.get_embedding",
             new_callable=AsyncMock,
             return_value=_EMBEDDING,
         ),
         patch(
-            "agent.general.tools.search_chunks",
+            "rag.tools.search_chunks",
             new_callable=AsyncMock,
             return_value=chunks,
         ),
@@ -29,12 +27,12 @@ async def test_returns_joined_chunks(openai_env):
 async def test_no_results_returns_fallback(openai_env):
     with (
         patch(
-            "agent.general.tools.get_embedding",
+            "rag.tools.get_embedding",
             new_callable=AsyncMock,
             return_value=_EMBEDDING,
         ),
         patch(
-            "agent.general.tools.search_chunks", new_callable=AsyncMock, return_value=[]
+            "rag.tools.search_chunks", new_callable=AsyncMock, return_value=[]
         ),
     ):
         result = await _search_company_info("something obscure")
@@ -44,12 +42,12 @@ async def test_no_results_returns_fallback(openai_env):
 async def test_passes_embedding_to_search(openai_env):
     with (
         patch(
-            "agent.general.tools.get_embedding",
+            "rag.tools.get_embedding",
             new_callable=AsyncMock,
             return_value=_EMBEDDING,
         ),
         patch(
-            "agent.general.tools.search_chunks",
+            "rag.tools.search_chunks",
             new_callable=AsyncMock,
             return_value=["chunk"],
         ) as mock_search,
@@ -62,12 +60,12 @@ async def test_passes_embedding_to_search(openai_env):
 async def test_search_exception_returns_fallback(openai_env):
     with (
         patch(
-            "agent.general.tools.get_embedding",
+            "rag.tools.get_embedding",
             new_callable=AsyncMock,
             return_value=_EMBEDDING,
         ),
         patch(
-            "agent.general.tools.search_chunks",
+            "rag.tools.search_chunks",
             new_callable=AsyncMock,
             side_effect=RuntimeError("pool not initialized"),
         ),

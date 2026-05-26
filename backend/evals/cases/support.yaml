@@ -1,0 +1,52 @@
+# Support agent cases: verify tool call patterns and response quality.
+
+- id: support_check_system_status
+  messages:
+    - role: user
+      content: "Is the API currently experiencing any issues?"
+  expected_agent: Support
+  expected_tools: [get_system_status]
+  quality_prompt: "Response should describe the current system status clearly."
+
+- id: support_create_ticket
+  messages:
+    - role: user
+      content: "I'm getting a 500 error on POST /api/v1/events. Email is bob@example.com"
+  expected_agent: Support
+  expected_tools: [create_ticket]
+  quality_prompt: "Response should confirm a ticket was created and provide the ticket ID."
+
+- id: support_ticket_status
+  messages:
+    - role: user
+      content: "What is the status of ticket BL-10001?"
+  expected_agent: Support
+  expected_tools: [get_ticket_status]
+  quality_prompt: "Response should clearly state the ticket status and any relevant details."
+
+- id: support_kb_search
+  messages:
+    - role: user
+      content: "How do I configure webhook retries?"
+  expected_agent: Support
+  expected_tools: [search_knowledge_base]
+  quality_prompt: "Response should provide actionable guidance on webhook configuration."
+
+- id: support_api_integration
+  messages:
+    - role: user
+      content: "I'm having trouble with the SDK integration, getting authentication errors"
+  expected_agent: Support
+  expected_tools: [search_knowledge_base]
+  quality_prompt: "Response should provide relevant troubleshooting steps for authentication issues."
+
+- id: support_unknown_ticket_id
+  messages:
+    - role: user
+      content: "Can you check the status of ticket INC-2026-012?"
+  expected_agent: Support
+  expected_tools: [get_ticket_status]
+  quality_prompt: >
+    Ticket INC-2026-012 does not exist. Response must say it was not found and ask the customer
+    to verify the reference number. Must use the exact ticket ID INC-2026-012 — must NOT invent
+    an alternative ID like BL-2026-012 or modify the format. Must NOT say it cannot help.

@@ -21,9 +21,9 @@ export default function RunnerOutput({ events }: Props) {
   return (
     <section>
       <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Runner Output</h3>
-      <div className="rounded-xl border border-slate-700 bg-slate-800/50 p-3 min-h-20">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-3 min-h-20">
         {events.length === 0 ? (
-          <p className="text-xs text-slate-600 italic">No events this turn.</p>
+          <p className="text-xs text-slate-400 dark:text-slate-600 italic">No events this turn.</p>
         ) : (
           <div className="space-y-2">
             {events.map((event, i) => (
@@ -33,7 +33,7 @@ export default function RunnerOutput({ events }: Props) {
                   <span className={`text-[10px] font-semibold uppercase mr-1.5 ${TYPE_COLOURS[event.type]}`}>
                     {event.type.replace('_', ' ')}
                   </span>
-                  <span className="text-xs text-slate-400 font-mono break-all">
+                  <span className="text-xs text-slate-600 dark:text-slate-400 font-mono break-all">
                     {event.type === 'handoff'
                       ? `${event.agent} → ${event.content}`
                       : event.content}

@@ -35,13 +35,13 @@ export default function Chat({ messages, loading, onSend }: Props) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="px-4 py-3 border-b border-slate-800 flex-shrink-0">
-        <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Customer View</h2>
+      <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
+        <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Customer View</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.length === 0 && (
-          <p className="text-slate-600 text-sm text-center mt-12">
+          <p className="text-slate-400 dark:text-slate-600 text-sm text-center mt-12">
             Send a message to start the conversation.
           </p>
         )}
@@ -50,7 +50,7 @@ export default function Chat({ messages, loading, onSend }: Props) {
             <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
               msg.role === 'user'
                 ? 'bg-indigo-600 text-white rounded-br-sm'
-                : 'bg-slate-800 text-slate-100 rounded-bl-sm'
+                : 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100 rounded-bl-sm'
             }`}>
               <ReactMarkdown
                 components={{
@@ -68,7 +68,7 @@ export default function Chat({ messages, loading, onSend }: Props) {
         ))}
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-slate-800 rounded-2xl rounded-bl-sm px-4 py-3.5">
+            <div className="bg-slate-100 dark:bg-slate-800 rounded-2xl rounded-bl-sm px-4 py-3.5">
               <div className="flex gap-1 items-center h-3">
                 <div className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '-0.3s' }} />
                 <div className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '-0.15s' }} />
@@ -80,7 +80,7 @@ export default function Chat({ messages, loading, onSend }: Props) {
         <div ref={bottomRef} />
       </div>
 
-      <div className="p-4 border-t border-slate-800 flex-shrink-0">
+      <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex-shrink-0">
         <div className="flex gap-2 items-end">
           <textarea
             value={input}
@@ -88,7 +88,7 @@ export default function Chat({ messages, loading, onSend }: Props) {
             onKeyDown={handleKeyDown}
             placeholder="Type a message…"
             rows={1}
-            className="flex-1 bg-slate-800 text-slate-100 placeholder-slate-500 rounded-xl px-4 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="flex-1 bg-slate-100 text-slate-900 placeholder-slate-400 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-500 rounded-xl px-4 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
           <button
             onClick={handleSend}

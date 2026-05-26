@@ -27,13 +27,13 @@ export default function Guardrails({ triggered }: Props) {
               className={`flex-1 rounded-xl p-3 border transition-all duration-200 ${
                 isTriggered
                   ? 'bg-red-500/10 border-red-500'
-                  : 'bg-slate-800/50 border-slate-700'
+                  : 'bg-slate-50 border-slate-200 dark:bg-slate-800/50 dark:border-slate-700'
               }`}
             >
               <div className="flex items-center gap-1.5 mb-1">
                 {isTriggered
                   ? <ShieldAlert size={12} className="text-red-400 flex-shrink-0" />
-                  : <Shield size={12} className="text-slate-600 flex-shrink-0" />
+                  : <Shield size={12} className="text-slate-400 dark:text-slate-600 flex-shrink-0" />
                 }
                 <span className={`text-xs font-medium leading-tight ${isTriggered ? 'text-red-300' : 'text-slate-500'}`}>
                   {gr.label}

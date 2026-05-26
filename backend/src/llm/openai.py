@@ -18,17 +18,17 @@ def get_async_client() -> AsyncOpenAI:
     return AsyncOpenAI(api_key=get_settings().openai_api_key)
 
 
-def get_openai_model() -> OpenAIResponsesModel:
-    """Return an OpenAIResponsesModel ready to pass to an Agent."""
+def get_billing_model() -> OpenAIResponsesModel:
+    """Return a model instance for the billing agent."""
     return OpenAIResponsesModel(
-        model=get_settings().openai_model, openai_client=get_async_client()
+        model=get_settings().billing_model, openai_client=get_async_client()
     )
 
 
-def get_domain_model() -> OpenAIResponsesModel:
-    """Return a model instance for domain agents (billing, support, general)."""
+def get_support_model() -> OpenAIResponsesModel:
+    """Return a model instance for the support agent."""
     return OpenAIResponsesModel(
-        model=get_settings().domain_model, openai_client=get_async_client()
+        model=get_settings().support_model, openai_client=get_async_client()
     )
 
 

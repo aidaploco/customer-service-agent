@@ -70,8 +70,9 @@ def get_system_status() -> str:
 @function_tool
 def search_knowledge_base(query: str) -> str:
     """
-    Search the Brightloop knowledge base for documentation relevant to the customer's issue.
-    Use this before creating a ticket to check if a self-service answer exists.
+    Search the Brightloop knowledge base for how-to guides, configuration docs, and
+    troubleshooting articles. Use this for any how-to, configuration, integration,
+    or troubleshooting question.
     """
     return _search_knowledge_base(query)
 
@@ -79,13 +80,15 @@ def search_knowledge_base(query: str) -> str:
 @function_tool
 def create_ticket(email: str, subject: str, description: str) -> str:
     """
-    Create a support ticket for an issue that could not be resolved in the conversation.
-    Returns a unique ticket reference number.
+    Create a support ticket for a bug, error, or unresolved technical issue.
+    Call this as soon as the customer describes a problem — do not wait.
+    Returns a unique ticket reference number (format: BL-XXXXX).
     """
     return _create_ticket(email, subject, description)
 
 
 @function_tool
 def get_ticket_status(ticket_id: str) -> str:
-    """Look up the status of an existing support ticket by its reference number (format: BL-XXXXX)."""
+    """Look up the status of an existing support ticket by its reference number. Always call
+    this with whatever ID the customer provides, regardless of format."""
     return _get_ticket_status(ticket_id)

@@ -10,7 +10,7 @@ from agent.billing.tools import (
     request_refund,
     update_plan,
 )
-from llm.openai import get_domain_model
+from llm.openai import get_billing_model
 
 
 def create_billing_agent(handoffs: list | None = None) -> Agent[None]:
@@ -19,7 +19,7 @@ def create_billing_agent(handoffs: list | None = None) -> Agent[None]:
         name="Billing",
         handoff_description="Handles subscription plans, invoices, payments, upgrades, cancellations, and billing disputes.",
         instructions=get_billing_instructions,
-        model=get_domain_model(),
+        model=get_billing_model(),
         model_settings=ModelSettings(temperature=0.2, max_tokens=400),
         tools=[
             get_subscription,

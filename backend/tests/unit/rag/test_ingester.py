@@ -1,6 +1,6 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from agent.general.ingester import _chunk_markdown, _file_hash, ingest_changed
+from rag.ingester import _chunk_markdown, _file_hash, ingest_changed
 
 
 def test_file_hash_is_deterministic(tmp_path):
@@ -37,14 +37,14 @@ def test_chunk_markdown_keeps_mixed_heading_and_body():
 
 async def test_ingest_changed_skips_unchanged_files(openai_env):
     with (
-        patch("agent.general.ingester.init_db", new_callable=AsyncMock),
+        patch("rag.ingester.init_db", new_callable=AsyncMock),
         patch(
-            "agent.general.ingester.hash_matches",
+            "rag.ingester.hash_matches",
             new_callable=AsyncMock,
             return_value=True,
         ),
         patch(
-            "agent.general.ingester.replace_source_chunks", new_callable=AsyncMock
+            "rag.ingester.replace_source_chunks", new_callable=AsyncMock
         ) as mock_replace,
     ):
         await ingest_changed()
@@ -58,16 +58,16 @@ async def test_ingest_changed_ingests_when_hash_differs(openai_env):
     mock_client.embeddings.create = AsyncMock(return_value=mock_response)
 
     with (
-        patch("agent.general.ingester.init_db", new_callable=AsyncMock),
+        patch("rag.ingester.init_db", new_callable=AsyncMock),
         patch(
-            "agent.general.ingester.hash_matches",
+            "rag.ingester.hash_matches",
             new_callable=AsyncMock,
             return_value=False,
         ),
         patch(
-            "agent.general.ingester.replace_source_chunks", new_callable=AsyncMock
+            "rag.ingester.replace_source_chunks", new_callable=AsyncMock
         ) as mock_replace,
-        patch("agent.general.ingester.get_async_client", return_value=mock_client),
+        patch("rag.ingester.get_async_client", return_value=mock_client),
     ):
         await ingest_changed()
 

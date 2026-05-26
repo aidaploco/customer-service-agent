@@ -7,7 +7,7 @@ from agent.support.agent import create_support_agent
 
 @pytest.fixture
 def support(openai_env):
-    with patch("agent.support.agent.get_domain_model", return_value=None):
+    with patch("agent.support.agent.get_support_model", return_value=None):
         return create_support_agent()
 
 
@@ -21,11 +21,11 @@ def test_agent_handoff_description(support):
 
 
 def test_agent_model_settings_temperature(support):
-    assert support.model_settings.temperature == 0.2
+    assert support.model_settings.temperature == 0.0
 
 
 def test_agent_model_settings_max_tokens(support):
-    assert support.model_settings.max_tokens == 400
+    assert support.model_settings.max_tokens == 1000
 
 
 def test_agent_instructions_is_callable(support):
@@ -39,6 +39,7 @@ def test_agent_has_tools(support):
         "search_knowledge_base",
         "create_ticket",
         "get_ticket_status",
+        "search_company_info",
     }
 
 
@@ -48,6 +49,6 @@ def test_agent_no_handoffs_by_default(support):
 
 def test_agent_forwards_handoffs(openai_env):
     dummy = MagicMock()
-    with patch("agent.support.agent.get_domain_model", return_value=None):
+    with patch("agent.support.agent.get_support_model", return_value=None):
         agent = create_support_agent(handoffs=[dummy])
     assert dummy in agent.handoffs

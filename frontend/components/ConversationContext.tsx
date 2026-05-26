@@ -9,24 +9,24 @@ export default function ConversationContext({ sessionId, activeAgent }: Props) {
   return (
     <section>
       <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Session</h3>
-      <div className="rounded-xl border border-slate-700 bg-slate-800/50 p-3 space-y-2">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-3 space-y-2">
         <Row label="Session ID">
-          <span className="font-mono text-[10px] text-slate-400 truncate" title={sessionId}>
+          <span className="font-mono text-[10px] text-slate-600 dark:text-slate-400 truncate" title={sessionId}>
             {sessionId.slice(0, 8)}…{sessionId.slice(-4)}
           </span>
         </Row>
         <Row label="Active agent">
-          <span className={activeAgent ? 'text-indigo-300' : 'text-slate-600'}>
+          <span className={activeAgent ? 'text-indigo-400' : 'text-slate-400 dark:text-slate-600'}>
             {activeAgent?.name ?? '—'}
           </span>
         </Row>
         {activeAgent && (
           <>
             <Row label="Tools">
-              <span className="text-slate-400">{activeAgent.tools.join(', ') || '—'}</span>
+              <span className="text-slate-600 dark:text-slate-400">{activeAgent.tools.join(', ') || '—'}</span>
             </Row>
             <Row label="Handoffs to">
-              <span className="text-slate-400">{activeAgent.handoffs.join(', ') || '—'}</span>
+              <span className="text-slate-600 dark:text-slate-400">{activeAgent.handoffs.join(', ') || '—'}</span>
             </Row>
           </>
         )}

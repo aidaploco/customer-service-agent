@@ -1,0 +1,101 @@
+# Routing-only cases: verify Supervisor sends each message to the right domain agent.
+# No tool assertions — just routing correctness.
+
+- id: routing_greeting
+  messages:
+    - role: user
+      content: "Hi there!"
+  expected_agent: Support
+
+- id: routing_vague_help
+  messages:
+    - role: user
+      content: "I need some help"
+  expected_agent: Support
+
+- id: routing_invoice_question
+  messages:
+    - role: user
+      content: "Can I see my latest invoice?"
+  expected_agent: Billing
+
+- id: routing_subscription_query
+  messages:
+    - role: user
+      content: "What plan am I currently on?"
+  expected_agent: Billing
+
+- id: routing_payment_issue
+  messages:
+    - role: user
+      content: "My payment failed last week"
+  expected_agent: Billing
+
+- id: routing_upgrade_request
+  messages:
+    - role: user
+      content: "I'd like to upgrade to the Pro plan"
+  expected_agent: Billing
+
+- id: routing_cancel_request
+  messages:
+    - role: user
+      content: "I want to cancel my subscription"
+  expected_agent: Billing
+
+- id: routing_refund_request
+  messages:
+    - role: user
+      content: "I'd like a refund for last month's charge"
+  expected_agent: Billing
+
+- id: routing_bug_report
+  messages:
+    - role: user
+      content: "The API is returning 500 errors on every request"
+  expected_agent: Support
+
+- id: routing_api_issue
+  messages:
+    - role: user
+      content: "My webhook isn't firing correctly"
+  expected_agent: Support
+
+- id: routing_ticket_creation
+  messages:
+    - role: user
+      content: "I need to report a bug"
+  expected_agent: Support
+
+- id: routing_ticket_status
+  messages:
+    - role: user
+      content: "What's the status of my support ticket?"
+  expected_agent: Support
+
+- id: routing_system_status
+  messages:
+    - role: user
+      content: "Is the platform down right now?"
+  expected_agent: Support
+
+- id: routing_pricing_question
+  messages:
+    - role: user
+      content: "What are your pricing plans?"
+  expected_agent: Support
+  tags: [db]
+
+- id: routing_security_question
+  messages:
+    - role: user
+      content: "Is your platform SOC 2 certified?"
+  expected_agent: Support
+  tags: [db]
+
+- id: routing_company_question
+  messages:
+    - role: user
+      content: "Tell me about Brightloop"
+  expected_agent: Support
+  tags: [db]
