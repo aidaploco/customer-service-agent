@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     openai_api_key: str
     supervisor_model: str = "gpt-4o-mini"
     eval_judge_model: str = "gpt-5.4-mini-2026-03-17"
-    billing_model: str = "gpt-4o-mini"
+    billing_model: str = "gpt-4o"
     support_model: str = "gpt-4o"
     guardrail_model: str = "gpt-4o-mini"
     embedding_model: str = "text-embedding-3-small"

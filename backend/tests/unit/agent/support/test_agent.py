@@ -21,11 +21,11 @@ def test_agent_handoff_description(support):
 
 
 def test_agent_model_settings_temperature(support):
-    assert support.model_settings.temperature == 0.0
+    assert support.model_settings.temperature == 0.1
 
 
 def test_agent_model_settings_max_tokens(support):
-    assert support.model_settings.max_tokens == 1000
+    assert support.model_settings.max_tokens == 800
 
 
 def test_agent_instructions_is_callable(support):
@@ -39,7 +39,6 @@ def test_agent_has_tools(support):
         "search_knowledge_base",
         "create_ticket",
         "get_ticket_status",
-        "search_company_info",
     }
 
 

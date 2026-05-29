@@ -1,6 +1,8 @@
+import asyncio
 import time
 from functools import lru_cache
 
+import openai
 from agents import InputGuardrailTripwireTriggered, RunConfig, Runner
 from agents.items import HandoffOutputItem, ToolCallItem
 
@@ -24,17 +26,27 @@ async def run_case(case: EvalCase) -> ExecutionSummary:
 
     start = time.perf_counter()
     try:
-        result = await Runner.run(
-            starting_agent=supervisor,
-            input=input_,
-            run_config=RunConfig(
-                input_guardrails=[
-                    message_length_guardrail,
-                    prompt_injection_guardrail,
-                    off_topic_guardrail,
-                ],
-            ),
-        )
+        last_rate_limit_exc: Exception | None = None
+        for attempt in range(3):
+            try:
+                result = await Runner.run(
+                    starting_agent=supervisor,
+                    input=input_,
+                    run_config=RunConfig(
+                        input_guardrails=[
+                            message_length_guardrail,
+                            prompt_injection_guardrail,
+                            off_topic_guardrail,
+                        ],
+                    ),
+                )
+                break
+            except openai.RateLimitError as exc:
+                last_rate_limit_exc = exc
+                if attempt < 2:
+                    await asyncio.sleep(10 * (attempt + 1))
+        else:
+            raise last_rate_limit_exc  # type: ignore[misc]
     except InputGuardrailTripwireTriggered as exc:
         latency_ms = (time.perf_counter() - start) * 1000
         gr = exc.guardrail_result
@@ -80,6 +92,9 @@ async def run_case(case: EvalCase) -> ExecutionSummary:
         if gr.output.tripwire_triggered
     ]
 
+    input_tokens = sum(r.usage.input_tokens for r in result.raw_responses)
+    output_tokens = sum(r.usage.output_tokens for r in result.raw_responses)
+
     return ExecutionSummary(
         case_id=case.id,
         final_output=result.final_output or "",
@@ -88,4 +103,6 @@ async def run_case(case: EvalCase) -> ExecutionSummary:
         tool_calls=tool_calls,
         triggered_guardrails=triggered_guardrails,
         latency_ms=latency_ms,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
     )

@@ -5,7 +5,7 @@
   messages:
     - role: user
       content: "Hi there!"
-  expected_agent: Support
+  expected_agent: Supervisor
 
 - id: routing_vague_help
   messages:
@@ -84,18 +84,15 @@
     - role: user
       content: "What are your pricing plans?"
   expected_agent: Support
-  tags: [db]
 
 - id: routing_security_question
   messages:
     - role: user
       content: "Is your platform SOC 2 certified?"
   expected_agent: Support
-  tags: [db]
 
 - id: routing_company_question
   messages:
     - role: user
       content: "Tell me about Brightloop"
   expected_agent: Support
-  tags: [db]

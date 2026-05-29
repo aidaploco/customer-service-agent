@@ -13,12 +13,7 @@ def create_supervisor_agent(handoffs: list | None = None) -> Agent[None]:
         handoff_description="Detects customer intent and routes to the appropriate domain agent.",
         instructions=get_intent_instructions,
         model=get_supervisor_model(),
-        model_settings=ModelSettings(
-            temperature=0.1,
-            max_tokens=150,
-            tool_choice="required",
-            parallel_tool_calls=False,
-        ),
+        model_settings=ModelSettings(temperature=0.1, max_tokens=150),
         tool_use_behavior="stop_on_first_tool",
         handoffs=handoffs or [],
     )

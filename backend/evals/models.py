@@ -22,6 +22,8 @@ class ExecutionSummary:
     tool_calls: list[tuple[str, str]]  # (agent_name, tool_name)
     triggered_guardrails: list[str]
     latency_ms: float
+    input_tokens: int = 0
+    output_tokens: int = 0
     error: str | None = None
 
 

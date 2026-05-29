@@ -21,7 +21,7 @@ def test_agent_handoff_description(billing):
 
 
 def test_agent_model_settings_temperature(billing):
-    assert billing.model_settings.temperature == 0.2
+    assert billing.model_settings.temperature == 0.1
 
 
 def test_agent_model_settings_max_tokens(billing):

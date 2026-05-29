@@ -32,6 +32,6 @@ def get_billing_instructions(_ctx: RunContextWrapper[None], _agent: Agent[None])
 
         Routing:
         The customer has one continuous conversation with Zara — the concept of transfers or
-        departments does not exist for them. For clearly technical questions (bug, error,
-        outage), trigger the handoff tool and generate no text.
+        departments does not exist for them. For any question you can't resolve with your
+        billing tools, trigger the handoff tool and generate no text.
     """).strip()

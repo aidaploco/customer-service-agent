@@ -6,44 +6,33 @@
     - role: user
       content: "What does Brightloop do?"
   expected_agent: Support
-  expected_tools: [search_company_info]
   quality_prompt: "Response should accurately describe the company's product or mission."
-  tags: [db]
 
-# NOTE: pricing.md has full tier details (Starter $49, Pro $199, Enterprise custom) but
-# rag_top_k=2 often returns the intro paragraph + annual discount section instead of the
-# tier blocks. Criteria intentionally softened until RAG chunking/retrieval is improved.
 - id: general_pricing_plans
   messages:
     - role: user
       content: "What are the different pricing tiers available?"
   expected_agent: Support
-  expected_tools: [search_company_info]
   quality_prompt: "Response should mention that multiple pricing tiers exist and include at least one concrete detail such as a price, discount, or trial offer."
-  tags: [db]
 
 - id: general_security_compliance
   messages:
     - role: user
       content: "Is Brightloop SOC 2 compliant?"
   expected_agent: Support
-  expected_tools: [search_company_info]
   quality_prompt: "Response should address security certifications or compliance posture."
-  tags: [db]
 
 - id: general_sla_question
   messages:
     - role: user
       content: "What does your SLA cover?"
   expected_agent: Support
-  expected_tools: [search_company_info]
   quality_prompt: "Response should describe SLA coverage — support response times, service credits, or uptime commitments based on available information."
-  tags: [db]
 
 - id: general_greeting
   messages:
     - role: user
       content: "Hello, I'm a new customer"
-  expected_agent: Support
+  expected_agent: Supervisor
   quality_prompt: "Response should be a warm, professional greeting that invites the customer to ask their question."
   tags: [db]

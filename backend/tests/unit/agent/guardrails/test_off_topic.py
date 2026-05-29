@@ -115,7 +115,7 @@ class TestOffTopicGuardrail:
             "agent.guardrails.off_topic.Runner.run",
             new_callable=AsyncMock,
             return_value=mock_result,
-        ) as mock_run:
+        ):
             output = await off_topic_guardrail.guardrail_function(
                 MagicMock(), MagicMock(), "Tell me a joke"
             )

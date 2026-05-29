@@ -20,7 +20,7 @@ def create_billing_agent(handoffs: list | None = None) -> Agent[None]:
         handoff_description="Handles subscription plans, invoices, payments, upgrades, cancellations, and billing disputes.",
         instructions=get_billing_instructions,
         model=get_billing_model(),
-        model_settings=ModelSettings(temperature=0.2, max_tokens=400),
+        model_settings=ModelSettings(temperature=0.1, max_tokens=400),
         tools=[
             get_subscription,
             get_invoice_history,

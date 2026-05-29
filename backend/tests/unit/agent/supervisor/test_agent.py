@@ -37,9 +37,5 @@ def test_agent_has_no_tools(supervisor):
     assert supervisor.tools == []
 
 
-def test_agent_tool_choice_required(supervisor):
-    assert supervisor.model_settings.tool_choice == "required"
-
-
 def test_agent_tool_use_behavior(supervisor):
     assert supervisor.tool_use_behavior == "stop_on_first_tool"
