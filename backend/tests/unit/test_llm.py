@@ -17,6 +17,7 @@ from llm.openai import (
 @pytest.fixture(autouse=True)
 def clear_llm_state(monkeypatch):
     from config import get_settings
+
     monkeypatch.setenv("OPENAI_API_KEY", "test-key-123")
     get_settings.cache_clear()
     get_async_client.cache_clear()
@@ -33,7 +34,10 @@ def test_get_billing_model_returns_model_instance():
         result = get_billing_model()
         mock_cls.assert_called_once()
         call_kwargs = mock_cls.call_args.kwargs
-        assert "billing" in call_kwargs["model"].lower() or call_kwargs["model"] is not None
+        assert (
+            "billing" in call_kwargs["model"].lower()
+            or call_kwargs["model"] is not None
+        )
 
 
 def test_get_support_model_returns_model_instance():
@@ -90,4 +94,7 @@ async def test_get_embedding_bypasses_expired_cache():
         await get_embedding("stale text")
     # Expired entry was bypassed and API was called
     mock_client.embeddings.create.assert_called_once()
-    assert "stale text" not in _embed_cache or _embed_cache["stale text"][1] > time.time() - 10
+    assert (
+        "stale text" not in _embed_cache
+        or _embed_cache["stale text"][1] > time.time() - 10
+    )

@@ -23,6 +23,7 @@ def _async_cm(return_value):
 
 # close_pg_pool
 
+
 async def test_close_pg_pool_when_none_is_noop():
     vs._pool = None
     await vs.close_pg_pool()  # should not raise
@@ -38,6 +39,7 @@ async def test_close_pg_pool_calls_close_on_pool():
 
 # _get_pool
 
+
 def test_get_pool_raises_when_not_initialized():
     vs._pool = None
     with pytest.raises(RuntimeError, match="not initialized"):
@@ -52,12 +54,15 @@ def test_get_pool_returns_pool_when_set():
 
 # init_db
 
+
 async def test_init_db_creates_extension_and_table():
     mock_conn = AsyncMock()
     mock_conn.__aenter__ = AsyncMock(return_value=mock_conn)
     mock_conn.__aexit__ = AsyncMock(return_value=None)
 
-    with patch("store.vector_store.psycopg.AsyncConnection.connect", return_value=mock_conn):
+    with patch(
+        "store.vector_store.psycopg.AsyncConnection.connect", return_value=mock_conn
+    ):
         with patch("store.vector_store.register_vector_async", new_callable=AsyncMock):
             with patch("store.vector_store.get_settings") as mock_settings:
                 mock_settings.return_value.postgres_url = "postgresql://test"
@@ -70,6 +75,7 @@ async def test_init_db_creates_extension_and_table():
 
 
 # hash_matches
+
 
 def _make_cur(fetchone=None, fetchall=None) -> AsyncMock:
     """cursor() is a sync call returning an async context manager."""
@@ -116,12 +122,19 @@ async def test_hash_matches_returns_false_when_not_found():
 
 # replace_source_chunks
 
+
 async def test_replace_source_chunks_deletes_then_inserts():
     cur = _make_cur()
     conn = _make_conn(cur)
 
     records = [
-        {"source": "company.md", "chunk_index": 0, "content": "chunk0", "source_hash": "h1", "embedding": [0.1]},
+        {
+            "source": "company.md",
+            "chunk_index": 0,
+            "content": "chunk0",
+            "source_hash": "h1",
+            "embedding": [0.1],
+        },
     ]
 
     with patch("store.vector_store.psycopg.AsyncConnection.connect", return_value=conn):
@@ -136,6 +149,7 @@ async def test_replace_source_chunks_deletes_then_inserts():
 
 
 # search_chunks
+
 
 async def test_search_chunks_returns_content_list():
     cur = _make_cur(fetchall=[("chunk A",), ("chunk B",)])

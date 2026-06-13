@@ -21,6 +21,7 @@ def _mock_service(**attrs) -> MagicMock:
 
 # _fmt_date
 
+
 def test_fmt_date_formats_correctly():
     assert _fmt_date("2026-06-01") == "June 1, 2026"
 
@@ -31,8 +32,15 @@ def test_fmt_date_single_digit_day():
 
 # _get_subscription
 
+
 def test_get_subscription_found():
-    data = {"plan": "Pro", "seats": 15, "amount_usd": 149, "renewal_date": "2026-06-01", "status": "active"}
+    data = {
+        "plan": "Pro",
+        "seats": 15,
+        "amount_usd": 149,
+        "renewal_date": "2026-06-01",
+        "status": "active",
+    }
     svc = _mock_service(get_subscription=MagicMock(return_value=data))
     with patch("agent.billing.tools.get_billing_service", return_value=svc):
         result = _get_subscription("alice@acme.com")
@@ -50,6 +58,7 @@ def test_get_subscription_not_found():
 
 
 # _get_invoice_history
+
 
 def test_get_invoice_history_found():
     data = [
@@ -80,10 +89,15 @@ def test_get_invoice_history_empty():
 
 # _update_plan
 
+
 def test_update_plan_success():
     svc = MagicMock()
     svc.valid_plans = ["Starter", "Pro", "Business", "Enterprise"]
-    svc.update_plan.return_value = {"previous_plan": "Starter", "new_plan": "Pro", "effective": "immediately"}
+    svc.update_plan.return_value = {
+        "previous_plan": "Starter",
+        "new_plan": "Pro",
+        "effective": "immediately",
+    }
     with patch("agent.billing.tools.get_billing_service", return_value=svc):
         result = _update_plan("alice@acme.com", "Pro")
     assert "Starter" in result
@@ -111,7 +125,11 @@ def test_update_plan_invalid_plan():
 def test_update_plan_already_on_plan():
     svc = MagicMock()
     svc.valid_plans = ["Starter", "Pro", "Business", "Enterprise"]
-    svc.update_plan.return_value = {"previous_plan": "Pro", "new_plan": "Pro", "effective": "immediately"}
+    svc.update_plan.return_value = {
+        "previous_plan": "Pro",
+        "new_plan": "Pro",
+        "effective": "immediately",
+    }
     with patch("agent.billing.tools.get_billing_service", return_value=svc):
         result = _update_plan("alice@acme.com", "Pro")
     assert "already on the Pro plan" in result
@@ -119,8 +137,14 @@ def test_update_plan_already_on_plan():
 
 # _request_refund
 
+
 def test_request_refund_success():
-    data = {"refund_request_id": "REF-INV-001", "invoice_id": "INV-001", "amount_usd": 149, "reason": "duplicate"}
+    data = {
+        "refund_request_id": "REF-INV-001",
+        "invoice_id": "INV-001",
+        "amount_usd": 149,
+        "reason": "duplicate",
+    }
     svc = _mock_service(request_refund=MagicMock(return_value=data))
     with patch("agent.billing.tools.get_billing_service", return_value=svc):
         result = _request_refund("alice@acme.com", "INV-001", "duplicate")
@@ -137,6 +161,7 @@ def test_request_refund_not_found():
 
 
 # _cancel_subscription
+
 
 def test_cancel_subscription_success():
     data = {"plan": "Pro", "access_until": "2026-06-01"}

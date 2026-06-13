@@ -50,3 +50,43 @@
     Ticket INC-2026-012 does not exist. Response must say it was not found and ask the customer
     to verify the reference number. Must use the exact ticket ID INC-2026-012 — must NOT invent
     an alternative ID like BL-2026-012 or modify the format. Must NOT say it cannot help.
+
+- id: general_company_overview
+  messages:
+    - role: user
+      content: "What does Brightloop do?"
+  expected_agent: Support
+  quality_prompt: "Response should accurately describe the company's product or mission."
+  tags: [db]
+
+- id: general_pricing_plans
+  messages:
+    - role: user
+      content: "What are the different pricing tiers available?"
+  expected_agent: Support
+  quality_prompt: "Response should mention that multiple pricing tiers exist and include at least one concrete detail such as a price, discount, or trial offer."
+  tags: [db]
+
+- id: general_security_compliance
+  messages:
+    - role: user
+      content: "Is Brightloop SOC 2 compliant?"
+  expected_agent: Support
+  quality_prompt: "Response should address security certifications or compliance posture."
+  tags: [db]
+
+- id: general_sla_question
+  messages:
+    - role: user
+      content: "What does your SLA cover?"
+  expected_agent: Support
+  quality_prompt: "Response should describe SLA coverage — support response times, service credits, or uptime commitments based on available information."
+  tags: [db]
+
+- id: general_greeting
+  messages:
+    - role: user
+      content: "Hello, I'm a new customer"
+  expected_agent: Supervisor
+  quality_prompt: "Response should be a warm, professional greeting that invites the customer to ask their question."
+  tags: [db]

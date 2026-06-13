@@ -10,6 +10,7 @@ from agent.support.tools import (
 
 # _get_system_status
 
+
 def test_get_system_status_operational():
     data = {
         "overall": "operational",
@@ -29,7 +30,11 @@ def test_get_system_status_with_incidents():
         "overall": "degraded_performance",
         "components": {"Webhooks": "degraded_performance"},
         "active_incidents": [
-            {"severity": "minor", "title": "Webhook delays", "update": "Under investigation."}
+            {
+                "severity": "minor",
+                "title": "Webhook delays",
+                "update": "Under investigation.",
+            }
         ],
     }
     svc = MagicMock(get_system_status=MagicMock(return_value=data))
@@ -49,6 +54,7 @@ def test_get_system_status_formats_overall():
 
 
 # _search_knowledge_base
+
 
 def test_search_knowledge_base_found():
     articles = [
@@ -72,6 +78,7 @@ def test_search_knowledge_base_no_results():
 
 # _create_ticket
 
+
 def test_create_ticket_returns_formatted_response():
     data = {
         "ticket_id": "BL-12345",
@@ -89,6 +96,7 @@ def test_create_ticket_returns_formatted_response():
 
 
 # _get_ticket_status
+
 
 def test_get_ticket_status_found():
     data = {

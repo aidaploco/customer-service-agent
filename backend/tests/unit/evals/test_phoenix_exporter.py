@@ -35,11 +35,16 @@ def _make_result(case_id: str = "billing_1", passed: bool = True) -> EvalResult:
 
 
 def test_phoenix_base_url_strips_path():
-    assert _phoenix_base_url("http://localhost:6006/v1/traces") == "http://localhost:6006"
+    assert (
+        _phoenix_base_url("http://localhost:6006/v1/traces") == "http://localhost:6006"
+    )
 
 
 def test_phoenix_base_url_preserves_scheme():
-    assert _phoenix_base_url("https://phoenix.example.com/otel") == "https://phoenix.example.com"
+    assert (
+        _phoenix_base_url("https://phoenix.example.com/otel")
+        == "https://phoenix.example.com"
+    )
 
 
 def test_extract_score_valid():

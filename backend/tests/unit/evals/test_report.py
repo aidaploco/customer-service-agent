@@ -8,10 +8,17 @@ from evals.report import build_report, print_report, save_report
 
 
 def _case(id_: str, tags: list[str] | None = None) -> EvalCase:
-    return EvalCase(id=id_, messages=[{"role": "user", "content": "hi"}], tags=tags or [])
+    return EvalCase(
+        id=id_, messages=[{"role": "user", "content": "hi"}], tags=tags or []
+    )
 
 
-def _summary(case_id: str, last_agent: str = "Billing", input_tokens: int = 100, output_tokens: int = 50) -> ExecutionSummary:
+def _summary(
+    case_id: str,
+    last_agent: str = "Billing",
+    input_tokens: int = 100,
+    output_tokens: int = 50,
+) -> ExecutionSummary:
     return ExecutionSummary(
         case_id=case_id,
         final_output="ok",
@@ -25,7 +32,9 @@ def _summary(case_id: str, last_agent: str = "Billing", input_tokens: int = 100,
     )
 
 
-def _result(case_id: str, passed: bool = True, last_agent: str = "Billing") -> EvalResult:
+def _result(
+    case_id: str, passed: bool = True, last_agent: str = "Billing"
+) -> EvalResult:
     case = _case(case_id)
     summary = _summary(case_id, last_agent=last_agent)
     graders = [GraderResult("routing", passed, "detail")]
@@ -78,9 +87,15 @@ def test_build_report_by_category():
 
 
 def test_build_report_by_category_pass_rate():
-    results = [_result("billing_1", True), _result("billing_2", True), _result("billing_3", False)]
+    results = [
+        _result("billing_1", True),
+        _result("billing_2", True),
+        _result("billing_3", False),
+    ]
     report = build_report(results)
-    assert report["summary"]["by_category"]["billing"]["pass_rate"] == pytest.approx(2 / 3, abs=1e-4)
+    assert report["summary"]["by_category"]["billing"]["pass_rate"] == pytest.approx(
+        2 / 3, abs=1e-4
+    )
 
 
 def test_build_report_config_included():

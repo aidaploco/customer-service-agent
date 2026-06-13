@@ -10,6 +10,7 @@ from evals.runner import run_case
 @pytest.fixture(autouse=True)
 def clear_registry():
     from evals import runner
+
     runner._registry.cache_clear()
     yield
     runner._registry.cache_clear()
@@ -22,13 +23,17 @@ def _case(messages=None) -> EvalCase:
     )
 
 
-def _mock_run_result(final_output: str = "Your plan is Pro.", last_agent: str = "Billing") -> MagicMock:
+def _mock_run_result(
+    final_output: str = "Your plan is Pro.", last_agent: str = "Billing"
+) -> MagicMock:
     result = MagicMock()
     result.final_output = final_output
     result.last_agent.name = last_agent
     result.new_items = []
     result.input_guardrail_results = []
-    result.raw_responses = [MagicMock(usage=MagicMock(input_tokens=100, output_tokens=50))]
+    result.raw_responses = [
+        MagicMock(usage=MagicMock(input_tokens=100, output_tokens=50))
+    ]
     return result
 
 
@@ -42,7 +47,9 @@ async def test_run_case_success():
     mock_result = _mock_run_result()
 
     with patch("evals.runner.build_agent_registry", return_value=_mock_registry()):
-        with patch("evals.runner.Runner.run", new_callable=AsyncMock, return_value=mock_result):
+        with patch(
+            "evals.runner.Runner.run", new_callable=AsyncMock, return_value=mock_result
+        ):
             summary = await run_case(_case())
 
     assert isinstance(summary, ExecutionSummary)
@@ -63,7 +70,9 @@ async def test_run_case_multi_message_input():
     mock_result = _mock_run_result()
 
     with patch("evals.runner.build_agent_registry", return_value=_mock_registry()):
-        with patch("evals.runner.Runner.run", new_callable=AsyncMock, return_value=mock_result) as mock_run:
+        with patch(
+            "evals.runner.Runner.run", new_callable=AsyncMock, return_value=mock_result
+        ) as mock_run:
             await run_case(_case(messages=messages))
             # multi-message input is passed as list, not just content string
             call_kwargs = mock_run.call_args.kwargs
@@ -74,7 +83,9 @@ async def test_run_case_single_message_uses_content_string():
     mock_result = _mock_run_result()
 
     with patch("evals.runner.build_agent_registry", return_value=_mock_registry()):
-        with patch("evals.runner.Runner.run", new_callable=AsyncMock, return_value=mock_result) as mock_run:
+        with patch(
+            "evals.runner.Runner.run", new_callable=AsyncMock, return_value=mock_result
+        ) as mock_run:
             await run_case(_case())
             call_kwargs = mock_run.call_args.kwargs
             assert call_kwargs["input"] == "What is my plan?"
@@ -82,7 +93,11 @@ async def test_run_case_single_message_uses_content_string():
 
 async def test_run_case_generic_exception_returns_error_summary():
     with patch("evals.runner.build_agent_registry", return_value=_mock_registry()):
-        with patch("evals.runner.Runner.run", new_callable=AsyncMock, side_effect=RuntimeError("boom")):
+        with patch(
+            "evals.runner.Runner.run",
+            new_callable=AsyncMock,
+            side_effect=RuntimeError("boom"),
+        ):
             summary = await run_case(_case())
 
     assert summary.error == "boom"
