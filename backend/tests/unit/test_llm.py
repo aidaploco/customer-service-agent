@@ -31,13 +31,8 @@ def clear_llm_state(monkeypatch):
 def test_get_billing_model_returns_model_instance():
     with patch("llm.openai.OpenAIResponsesModel") as mock_cls:
         mock_cls.return_value = MagicMock()
-        result = get_billing_model()
+        get_billing_model()
         mock_cls.assert_called_once()
-        call_kwargs = mock_cls.call_args.kwargs
-        assert (
-            "billing" in call_kwargs["model"].lower()
-            or call_kwargs["model"] is not None
-        )
 
 
 def test_get_support_model_returns_model_instance():

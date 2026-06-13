@@ -1,6 +1,5 @@
 from unittest.mock import MagicMock, patch
 
-import pytest
 
 from evals.models import EvalCase, EvalResult, ExecutionSummary, GraderResult
 from evals.phoenix_exporter import _extract_score, _phoenix_base_url, export
@@ -90,7 +89,6 @@ def test_export_returns_dataset_name():
 
 
 def test_export_dataframe_has_correct_rows():
-    import pandas as pd
 
     results = [_make_result("billing_1"), _make_result("routing_1")]
     captured_df = {}
