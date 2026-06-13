@@ -59,7 +59,9 @@ jobs:
   evals:
     name: Evals
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    continue-on-error: ${{ github.event_name == 'pull_request' }}
+    permissions:
+      pull-requests: write
     defaults:
       run:
         working-directory: backend
@@ -76,6 +78,7 @@ jobs:
         run: uv sync --frozen
 
       - name: Run evals
+        id: run_evals
         run: uv run python -m evals --skip-tags db --threshold 0.9 --output eval_report.json
 
       - name: Upload eval report
@@ -84,6 +87,65 @@ jobs:
         with:
           name: eval-report
           path: backend/eval_report.json
+
+      - name: Comment eval results on PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = 'backend/eval_report.json';
+            if (!fs.existsSync(reportPath)) {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '## ⚠️ Evals did not run\n\nThe eval report was not produced (evals may have crashed before completing).',
+              });
+              return;
+            }
+            const THRESHOLD = 0.9;
+            const report = JSON.parse(fs.readFileSync(reportPath));
+            const s = report.summary;
+            const u = s.usage || {};
+            const icon = s.pass_rate >= THRESHOLD ? '✅' : '❌';
+            const cfg = Object.entries(report.config || {}).map(([k,v]) => `\`${v}\``).join(' · ');
+            const cats = Object.entries(s.by_category || {})
+              .map(([cat, v]) => `| ${cat} | ${v.passed}/${v.total} | ${(v.pass_rate*100).toFixed(0)}% |`)
+              .join('\n');
+            const tokens = u.total_tokens
+              ? `\n**Tokens:** ${u.input_tokens.toLocaleString()} in / ${u.output_tokens.toLocaleString()} out`
+              : '';
+            const body = [
+              `## ${icon} Evals: ${s.passed}/${s.total} passed (${(s.pass_rate*100).toFixed(1)}%)`,
+              `**Models:** ${cfg}${tokens}`,
+              '',
+              '| Category | Passed | Rate |',
+              '|---|---|---|',
+              cats,
+            ].join('\n');
+            const marker = '<!-- eval-results -->';
+            const { data: comments } = await github.rest.issues.listComments({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            const existing = comments.find(c => c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                comment_id: existing.id,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: marker + '\n' + body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: marker + '\n' + body,
+              });
+            }
 
   docker:
     name: Docker Build
