@@ -1,20 +1,4 @@
 services:
-  postgres:
-    image: pgvector/pgvector:pg17
-    environment:
-      POSTGRES_USER: brightloop
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
-      POSTGRES_DB: brightloop
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U brightloop"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-
   redis:
     image: redis:7-alpine
     ports:
@@ -32,17 +16,8 @@ services:
     ports:
       - "6006:6006"
       - "4317:4317"
-    environment:
-      PHOENIX_POSTGRES_HOST: postgres
-      PHOENIX_POSTGRES_PORT: 5432
-      PHOENIX_POSTGRES_DB: brightloop
-      PHOENIX_POSTGRES_USER: brightloop
-      PHOENIX_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
     volumes:
       - phoenix_data:/mnt/data
-    depends_on:
-      postgres:
-        condition: service_healthy
 
   backend:
     build:
@@ -53,12 +28,9 @@ services:
       - .env
     environment:
       REDIS_URL: redis://redis:6379
-      POSTGRES_URL: postgresql://brightloop:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@postgres:5432/brightloop
       PHOENIX_COLLECTOR_ENDPOINT: http://phoenix:6006/v1/traces
     depends_on:
       redis:
-        condition: service_healthy
-      postgres:
         condition: service_healthy
       phoenix:
         condition: service_started
@@ -85,5 +57,4 @@ services:
 volumes:
   redis_data:
   redisinsight_data:
-  postgres_data:
   phoenix_data:

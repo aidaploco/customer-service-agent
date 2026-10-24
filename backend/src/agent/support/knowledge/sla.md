@@ -2,7 +2,7 @@
 
 ## Platform Uptime
 
-Brightloop targets 99.9% monthly uptime for Starter and Pro plans, and 99.99% for Enterprise.
+Brightloop targets 99.9% monthly uptime for Starter, Pro, and Business plans, and 99.99% for Enterprise.
 
 Historical uptime and incident history are published at status.brightloop.io.
 
@@ -28,6 +28,7 @@ Credits must be requested within 30 days of the incident. They apply to future i
 |------|---------|--------------|
 | Starter | Email | 48 business hours |
 | Pro | Email + Chat | 8 business hours |
+| Business | Email + Chat | 4 business hours |
 | Enterprise | Dedicated chat + Email | 1 business hour (P1 incidents) |
 
 ## Incident Communication

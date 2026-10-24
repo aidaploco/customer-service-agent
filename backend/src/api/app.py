@@ -4,13 +4,11 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from rag.ingester import ingest_changed
 from api.middleware.request_id import RequestIDMiddleware
 from api.routes.chat import router as chat_router
 from api.routes.health import router as health_router
 from config import get_settings
 from observability import setup_tracing
-from store.vector_store import close_pg_pool, init_pg_pool
 from utils.logger import get_logger
 
 _logger = get_logger(__name__)
@@ -19,23 +17,12 @@ _logger = get_logger(__name__)
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     try:
-        await init_pg_pool()
-    except Exception:
-        _logger.exception("Postgres pool init failed — vector search will not work")
-    try:
         setup_tracing()
     except Exception:
         _logger.exception(
             "Phoenix tracing setup failed — continuing without observability"
         )
-    try:
-        await ingest_changed()
-    except Exception:
-        _logger.exception(
-            "Knowledge ingestion failed at startup — Support agent will not answer general questions"
-        )
     yield
-    await close_pg_pool()
 
 
 app = FastAPI(title="Customer Service Agent", lifespan=lifespan)

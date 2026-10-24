@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from agent.support.instructions import get_support_instructions
+from agent.support.instructions import _KNOWLEDGE_DIR, get_support_instructions
 
 
 def _call() -> str:
@@ -40,3 +40,23 @@ def test_handoff_is_invisible_to_user():
     assert (
         "does not exist" in result.lower()
     )  # routing is invisible by principle, not forbidden-phrase list
+
+
+def test_includes_every_knowledge_document():
+    """Each knowledge file is loaded verbatim into the prompt."""
+    result = _call()
+    for path in sorted(_KNOWLEDGE_DIR.glob("*.md")):
+        assert path.read_text().strip() in result
+
+
+def test_knowledge_lists_all_four_plans():
+    """Pricing knowledge must match the plans the billing service offers."""
+    from services.billing.mock_data import PLANS
+
+    result = _call()
+    for plan in PLANS:
+        assert plan in result
+
+
+def test_knowledge_placeholder_is_replaced():
+    assert "{{KNOWLEDGE}}" not in _call()
