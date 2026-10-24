@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from html import escape
 from textwrap import dedent
 
 from agents import (
@@ -70,7 +71,7 @@ async def prompt_injection_guardrail(
 
     result = await Runner.run(
         starting_agent=_get_injection_agent(),
-        input=f"<msg>{message}</msg>",
+        input=f"<msg>{escape(message, quote=False)}</msg>",
         context=ctx.context,
         run_config=RunConfig(tracing_disabled=True),
     )

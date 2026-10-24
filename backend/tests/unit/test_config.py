@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from config import Settings, get_settings
+from config import Settings
 
 
 def test_missing_api_key_raises():
@@ -10,10 +10,12 @@ def test_missing_api_key_raises():
         Settings(openai_api_key=None)
 
 
-def test_default_values(openai_env):
-    """Confirm defaults match expected values."""
-    settings = get_settings()
-    assert settings.log_level == "DEBUG"
+def test_default_values(monkeypatch):
+    """Confirm defaults match expected values, ignoring any local .env or env vars."""
+    monkeypatch.delenv("LOG_LEVEL", raising=False)
+    monkeypatch.delenv("API_PREFIX", raising=False)
+    settings = Settings(_env_file=None, openai_api_key="test-key")
+    assert settings.log_level == "INFO"
     assert settings.api_prefix == "/api/v1"
 
 

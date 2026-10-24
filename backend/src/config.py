@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     embedding_dim: int = 1536
     max_message_length: int = 1000
     rag_top_k: int = 2
-    log_level: str = "DEBUG"
+    log_level: str = "INFO"
     api_prefix: str = "/api/v1"
     redis_url: str = "redis://localhost:6379"
     session_ttl_seconds: int = 3600

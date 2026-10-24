@@ -30,6 +30,15 @@ def test_preserves_existing_request_id(client):
     assert response.headers[REQUEST_ID_HEADER] == existing_id
 
 
+@pytest.mark.parametrize(
+    "bad_id", ["x" * 65, "has space", "line\tbreak", "a;b", "<script>"]
+)
+def test_replaces_malformed_request_id(client, bad_id):
+    response = client.get("/ping", headers={REQUEST_ID_HEADER: bad_id})
+    assert response.headers[REQUEST_ID_HEADER] != bad_id
+    assert len(response.headers[REQUEST_ID_HEADER]) == 36
+
+
 def test_generated_id_is_unique(client):
     id_1 = client.get("/ping").headers[REQUEST_ID_HEADER]
     id_2 = client.get("/ping").headers[REQUEST_ID_HEADER]
