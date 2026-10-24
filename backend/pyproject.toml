@@ -1,7 +1,7 @@
 [project]
 name = "cs-agent"
 version = "0.1.0"
-description = "Add your description here"
+description = "Multi-agent customer service assistant: supervisor routing, guardrails, RAG, and an eval harness"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
