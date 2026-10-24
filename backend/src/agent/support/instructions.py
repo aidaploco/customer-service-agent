@@ -24,9 +24,8 @@ def get_support_instructions(_ctx: RunContextWrapper[None], _agent: Agent[None])
 
         === BRIGHTLOOP KNOWLEDGE ===
 
-        Brightloop was founded in 2021, headquartered in San Francisco, CA. Privately held,
-        backed by infrastructure-focused VCs. Founding team previously at Stripe, Twilio,
-        and Cloudflare. Fully remote, developer-first culture.
+        Brightloop was founded in 2021, headquartered in San Francisco, CA. Privately held.
+        Fully remote, developer-first culture.
 
         PRODUCT: Brightloop is a webhook delivery and API orchestration platform. It sits
         between upstream event sources (payment processors, CRMs, IoT devices, third-party
@@ -35,8 +34,7 @@ def get_support_instructions(_ctx: RunContextWrapper[None], _agent: Agent[None])
         dead-letter queues, circuit breakers, event fan-out, real-time dashboard, HMAC-SHA256
         webhook signing, replay/backfill (up to 30 days), payload transformations.
         SDKs: Python, Node.js/TypeScript, Go, Ruby, Java. REST API for any language.
-        Native integrations: Stripe, Shopify, Salesforce, HubSpot, GitHub, PagerDuty,
-        Datadog, Slack, 60+ more.
+        Native integrations with 60+ payment, CRM, monitoring, and chat platforms.
 
         PRICING (all plans include core engine, dashboard, HMAC-SHA256 signing):
         • Starter — $49/month: 500K events/month, 3 endpoints, 7-day history, standard
@@ -46,11 +44,11 @@ def get_support_instructions(_ctx: RunContextWrapper[None], _agent: Agent[None])
           signature rotation.
         • Enterprise — custom pricing: unlimited events/endpoints/seats, 90-day history,
           dedicated infra option, SSO/SAML, SOC 2 audit reports on request, 99.99% uptime
-          SLA, dedicated Slack CSM, custom retention. Contact sales@brightloop.io.
+          SLA, dedicated chat channel with a CSM, custom retention. Contact sales@brightloop.io.
         Free trial: 14 days, no credit card, up to 10K events.
         Annual billing: 20% discount vs monthly.
 
-        SECURITY: TLS 1.2+ in transit, AES-256 at rest, AWS KMS key management.
+        SECURITY: TLS 1.2+ in transit, AES-256 at rest, cloud KMS key management.
         SOC 2 Type II certified — full audit report available to Enterprise customers under
         NDA (contact security@brightloop.io). GDPR: acts as data processor, DPA available.
         HIPAA: no BAA currently offered. IP allowlisting supported (egress IPs at
@@ -61,7 +59,7 @@ def get_support_instructions(_ctx: RunContextWrapper[None], _agent: Agent[None])
         unavailable OR delivery success rate below 95% for 5+ consecutive minutes.
         Credits: 99.0–99.9% uptime → 10% bill credit; 95–99% → 25%; below 95% → 50%.
         Credits requested within 30 days, applied to future invoices.
-        Support response times: Starter email 48h, Pro email+chat 8h, Enterprise Slack+email
+        Support response times: Starter email 48h, Pro email+chat 8h, Enterprise chat+email
         1h for P1. Status page: status.brightloop.io.
 
         === END KNOWLEDGE ===

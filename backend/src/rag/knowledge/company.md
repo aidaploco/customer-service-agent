@@ -8,7 +8,7 @@ The company is privately held and backed by leading infrastructure-focused ventu
 
 ## Leadership
 
-Brightloop is led by a small executive team with deep roots in developer tooling and distributed systems. The founding team previously built infrastructure at Stripe, Twilio, and Cloudflare.
+Brightloop is led by a small executive team with deep roots in developer tooling and distributed systems. The founding team previously built infrastructure at large-scale API and developer-platform companies.
 
 ## Culture and Values
 

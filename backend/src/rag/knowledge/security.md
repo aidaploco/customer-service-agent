@@ -2,7 +2,7 @@
 
 ## Data Security
 
-All data in transit is encrypted with TLS 1.2 or higher. Data at rest is encrypted using AES-256. Encryption keys are managed via AWS KMS with automatic annual rotation.
+All data in transit is encrypted with TLS 1.2 or higher. Data at rest is encrypted using AES-256. Encryption keys are managed via a cloud KMS with automatic annual rotation.
 
 Event payloads are stored in Brightloop's infrastructure only long enough to fulfill your retention policy (7, 30, or 90 days depending on plan). You can trigger immediate deletion via the API or dashboard.
 
@@ -16,7 +16,7 @@ Event payloads are stored in Brightloop's infrastructure only long enough to ful
 
 ## Network Security
 
-Brightloop operates entirely within AWS VPCs. All internal service communication is private. No event data traverses the public internet except for the final delivery leg to your endpoint.
+Brightloop operates entirely within private cloud VPCs. All internal service communication is private. No event data traverses the public internet except for the final delivery leg to your endpoint.
 
 IP allowlisting: Brightloop publishes a static list of egress IP ranges for customers who want to allowlist inbound webhook traffic. The list is available at brightloop.io/ip-ranges and updated with 30-day notice before any changes.
 

@@ -42,7 +42,7 @@ def test_get_subscription_found():
     }
     svc = _mock_service(get_subscription=MagicMock(return_value=data))
     with patch("agent.billing.tools.get_billing_service", return_value=svc):
-        result = _get_subscription("alice@acme.com")
+        result = _get_subscription("alice@example.com")
     assert "Pro" in result
     assert "15" in result
     assert "June 1, 2026" in result
@@ -66,7 +66,7 @@ def test_get_invoice_history_found():
     ]
     svc = _mock_service(get_invoices=MagicMock(return_value=data))
     with patch("agent.billing.tools.get_billing_service", return_value=svc):
-        result = _get_invoice_history("alice@acme.com")
+        result = _get_invoice_history("alice@example.com")
     assert "INV-001" in result
     assert "INV-002" in result
     assert "Paid" in result
@@ -82,7 +82,7 @@ def test_get_invoice_history_not_found():
 def test_get_invoice_history_empty():
     svc = _mock_service(get_invoices=MagicMock(return_value=[]))
     with patch("agent.billing.tools.get_billing_service", return_value=svc):
-        result = _get_invoice_history("alice@acme.com")
+        result = _get_invoice_history("alice@example.com")
     assert "No invoices found" in result
 
 
@@ -98,7 +98,7 @@ def test_update_plan_success():
         "effective": "immediately",
     }
     with patch("agent.billing.tools.get_billing_service", return_value=svc):
-        result = _update_plan("alice@acme.com", "Pro")
+        result = _update_plan("alice@example.com", "Pro")
     assert "Starter" in result
     assert "Pro" in result
 
@@ -116,7 +116,7 @@ def test_update_plan_invalid_plan():
     svc = MagicMock()
     svc.valid_plans = ["Starter", "Pro", "Business", "Enterprise"]
     with patch("agent.billing.tools.get_billing_service", return_value=svc):
-        result = _update_plan("alice@acme.com", "Gold")
+        result = _update_plan("alice@example.com", "Gold")
     assert "not a valid plan" in result
     assert "Gold" in result
 
@@ -130,7 +130,7 @@ def test_update_plan_already_on_plan():
         "effective": "immediately",
     }
     with patch("agent.billing.tools.get_billing_service", return_value=svc):
-        result = _update_plan("alice@acme.com", "Pro")
+        result = _update_plan("alice@example.com", "Pro")
     assert "already on the Pro plan" in result
 
 
@@ -146,7 +146,7 @@ def test_request_refund_success():
     }
     svc = _mock_service(request_refund=MagicMock(return_value=data))
     with patch("agent.billing.tools.get_billing_service", return_value=svc):
-        result = _request_refund("alice@acme.com", "INV-001", "duplicate")
+        result = _request_refund("alice@example.com", "INV-001", "duplicate")
     assert "REF-INV-001" in result
     assert "149" in result
     assert "duplicate" in result
@@ -155,7 +155,7 @@ def test_request_refund_success():
 def test_request_refund_not_found():
     svc = _mock_service(request_refund=MagicMock(return_value=None))
     with patch("agent.billing.tools.get_billing_service", return_value=svc):
-        result = _request_refund("alice@acme.com", "INV-999", "error")
+        result = _request_refund("alice@example.com", "INV-999", "error")
     assert "not found" in result
 
 
@@ -166,7 +166,7 @@ def test_cancel_subscription_success():
     data = {"plan": "Pro", "access_until": "2026-06-01"}
     svc = _mock_service(cancel_subscription=MagicMock(return_value=data))
     with patch("agent.billing.tools.get_billing_service", return_value=svc):
-        result = _cancel_subscription("alice@acme.com", "switching providers")
+        result = _cancel_subscription("alice@example.com", "switching providers")
     assert "Pro" in result
     assert "June 1, 2026" in result
 

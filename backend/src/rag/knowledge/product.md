@@ -28,4 +28,4 @@ Official SDKs are available for: Python, Node.js/TypeScript, Go, Ruby, and Java.
 
 ## Integrations
 
-Brightloop has native integrations with: Stripe, Shopify, Salesforce, HubSpot, GitHub, PagerDuty, Datadog, Slack, and 60+ other platforms. Custom integrations are supported via the REST API.
+Brightloop has native integrations with: payment processors, CRMs, source-control hosts, incident-management and monitoring tools, chat platforms, and 60+ other services. Custom integrations are supported via the REST API.

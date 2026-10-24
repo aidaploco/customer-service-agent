@@ -3,7 +3,7 @@
 - id: billing_view_subscription
   messages:
     - role: user
-      content: "What subscription plan do I have? My email is alice@acme.com"
+      content: "What subscription plan do I have? My email is alice@example.com"
   expected_agent: Billing
   expected_tools: [get_subscription]
   quality_prompt: "Response should mention the plan name, status, and next billing date."
@@ -11,7 +11,7 @@
 - id: billing_view_invoices
   messages:
     - role: user
-      content: "Can I see my recent invoices? Email is alice@acme.com"
+      content: "Can I see my recent invoices? Email is alice@example.com"
   expected_agent: Billing
   expected_tools: [get_invoice_history]
   quality_prompt: "Response should list invoice IDs, dates, amounts, and status."
@@ -19,7 +19,7 @@
 - id: billing_upgrade_plan
   messages:
     - role: user
-      content: "I'd like to upgrade to the Business plan. My email is alice@acme.com"
+      content: "I'd like to upgrade to the Business plan. My email is alice@example.com"
   expected_agent: Billing
   expected_tools: [update_plan]
   quality_prompt: "Response should confirm the upgrade and mention the new plan details."
@@ -27,7 +27,7 @@
 - id: billing_request_refund
   messages:
     - role: user
-      content: "I was charged incorrectly on invoice INV-2026-004. Please refund it. Email is alice@acme.com"
+      content: "I was charged incorrectly on invoice INV-2026-004. Please refund it. Email is alice@example.com"
   expected_agent: Billing
   expected_tools: [request_refund]
   quality_prompt: "Response should confirm the refund request and provide a reference or timeline."
@@ -35,7 +35,7 @@
 - id: billing_cancel_subscription
   messages:
     - role: user
-      content: "I want to cancel my subscription. Email is alice@acme.com, reason: switching to a competitor"
+      content: "I want to cancel my subscription. Email is alice@example.com, reason: switching to a competitor"
   expected_agent: Billing
   expected_tools: [cancel_subscription]
   quality_prompt: "Response should confirm the cancellation and mention any relevant details like effective date."
@@ -43,7 +43,7 @@
 - id: billing_downgrade_plan
   messages:
     - role: user
-      content: "I'd like to downgrade to the Starter plan. My email is alice@acme.com"
+      content: "I'd like to downgrade to the Starter plan. My email is alice@example.com"
   expected_agent: Billing
   expected_tools: [update_plan]
   quality_prompt: "Response should confirm the downgrade and mention the new plan name."

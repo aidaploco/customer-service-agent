@@ -61,8 +61,14 @@ KB_ARTICLES: list[dict] = [
     },
     {
         "title": "Connecting third-party integrations",
-        "summary": "Step-by-step guides for Slack, Jira, GitHub, and Zapier integrations.",
-        "tags": ["integration", "slack", "jira", "github", "zapier"],
+        "summary": "Step-by-step guides for chat, issue-tracker, source-control, and automation integrations.",
+        "tags": [
+            "integration",
+            "chat",
+            "issue-tracker",
+            "source-control",
+            "automation",
+        ],
     },
     {
         "title": "Understanding your Brightloop subscription",
