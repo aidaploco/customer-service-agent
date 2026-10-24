@@ -1,6 +1,6 @@
 # Brightloop — Plans and Pricing
 
-Brightloop offers three tiers. All plans include the core webhook delivery engine, dashboard access, and HMAC-SHA256 signing.
+Brightloop offers four tiers: Starter, Pro, Business, and Enterprise. All plans include the core webhook delivery engine, dashboard access, and HMAC-SHA256 signing.
 
 ## Starter — $49/month
 
@@ -13,7 +13,7 @@ For indie developers and small projects.
 - Email support (48-hour response SLA)
 - 1 team member seat
 
-## Pro — $199/month
+## Pro — $149/month
 
 For growing teams with production workloads.
 
@@ -23,7 +23,21 @@ For growing teams with production workloads.
 - Custom retry policies per endpoint
 - Payload transformations
 - Priority email + chat support (8-hour response SLA)
-- 10 team member seats
+- Up to 20 team member seats
+- Webhook signature rotation
+
+## Business — $399/month
+
+For larger organizations that need higher volume and longer history without moving to a custom contract.
+
+- Up to 25,000,000 events/month
+- Unlimited endpoints
+- 60-day event history and replay
+- Custom retry policies per endpoint
+- Payload transformations
+- Priority email + chat support (4-hour response SLA)
+- Up to 100 team member seats
+- Role-based access control
 - Webhook signature rotation
 
 ## Enterprise — Custom pricing

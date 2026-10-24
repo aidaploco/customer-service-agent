@@ -26,4 +26,4 @@ Brightloop maintains a responsible disclosure program. Security researchers can 
 
 ## Access Control
 
-Role-based access control (RBAC) is available on Pro and Enterprise plans. Supported roles: Owner, Admin, Developer, Read-only. Enterprise plans include SSO via SAML 2.0.
+Role-based access control (RBAC) is available on Pro, Business, and Enterprise plans. Supported roles: Owner, Admin, Developer, Read-only. Enterprise plans include SSO via SAML 2.0.

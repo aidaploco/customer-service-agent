@@ -80,7 +80,7 @@ jobs:
 
       - name: Run evals
         id: run_evals
-        run: uv run python -m evals --skip-tags db --threshold 0.9 --output eval_report.json
+        run: uv run python -m evals --threshold 0.9 --output eval_report.json
 
       - name: Upload eval report
         if: always()

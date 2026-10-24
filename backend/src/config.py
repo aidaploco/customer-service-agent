@@ -14,16 +14,11 @@ class Settings(BaseSettings):
     billing_model: str = "gpt-4o"
     support_model: str = "gpt-4o"
     guardrail_model: str = "gpt-4o-mini"
-    embedding_model: str = "text-embedding-3-small"
-    embedding_dim: int = 1536
     max_message_length: int = 1000
-    rag_top_k: int = 2
     log_level: str = "INFO"
     api_prefix: str = "/api/v1"
     redis_url: str = "redis://localhost:6379"
     session_ttl_seconds: int = 3600
-    postgres_url: str = "postgresql://brightloop:brightloop@localhost:5432/brightloop"
-    postgres_pool_size: int = 10
     phoenix_collector_endpoint: str | None = None
 
 

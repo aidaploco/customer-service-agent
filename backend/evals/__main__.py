@@ -15,7 +15,6 @@ from evals.models import EvalResult
 from evals.phoenix_exporter import export as phoenix_export
 from evals.report import build_report, print_report, save_report
 from evals.runner import run_case
-from store.vector_store import close_pg_pool, init_pg_pool
 
 
 async def run_all(cases, concurrency: int) -> list[EvalResult]:
@@ -64,19 +63,7 @@ def main():
 
     print(f"\nRunning {len(cases)} eval case(s)…\n")
 
-    async def _run() -> list[EvalResult]:
-        try:
-            await init_pg_pool()
-        except Exception as exc:
-            print(
-                f"Postgres unavailable ({exc}) — db-tagged cases will fail if included"
-            )
-        try:
-            return await run_all(cases, concurrency=args.concurrency)
-        finally:
-            await close_pg_pool()
-
-    results = asyncio.run(_run())
+    results = asyncio.run(run_all(cases, concurrency=args.concurrency))
 
     s = get_settings()
     report = build_report(
