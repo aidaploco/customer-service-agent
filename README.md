@@ -1,6 +1,6 @@
 # Customer Service Agent
 
-A multi-agent customer service assistant built on the [OpenAI Agents SDK](https://openai.github.io/openai-agents-python/). A supervisor agent routes each conversation to a billing or support specialist, input guardrails screen every message, a RAG tool answers company questions from a knowledge base, and an eval harness measures routing, tool use, guardrails, latency, and answer quality.
+A multi-agent customer service assistant built on the [OpenAI Agents SDK](https://openai.github.io/openai-agents-python/). A supervisor agent routes each conversation to a billing or support specialist, input guardrails screen every message, company questions are answered from a built-in knowledge base, and an eval harness measures routing, tool use, guardrails, latency, and answer quality.
 
 > **This is a demo project.** "Brightloop" (a webhook-delivery SaaS) and its persona "Zara" are fictional. All customer data, invoices, tickets, and knowledge-base content are invented mock data, and the billing tools act on an email address with no authentication. It is not meant to be deployed as-is.
 
@@ -15,9 +15,7 @@ flowchart LR
     S <-->|handoff| B[Billing agent]
     S <-->|handoff| SP[Support agent]
     B --> BT[Billing tools]
-    SP --> ST[Ticket and status tools]
-    SP --> RAG[search_company_info]
-    RAG --> PG[(Postgres + pgvector)]
+    SP --> ST[Ticket, status, and KB tools]
     API <--> RD[(Redis: session state)]
     API -.traces.-> PX[Phoenix]
 ```
@@ -25,7 +23,7 @@ flowchart LR
 - **Hub-and-spoke routing.** The supervisor detects intent and hands off to Billing or Support. Specialists hand back to the supervisor for off-topic requests; there are no specialist-to-specialist handoffs. Handoffs are invisible to the user, who sees one continuous conversation with one persona.
 - **Sessions.** Conversation history and the current agent are stored in Redis per session (UUID v4) with a TTL, so a follow-up message continues with the agent that was handling the conversation.
 - **Guardrails.** Three input guardrails run on every message: message length, prompt injection, and off-topic. The latter two are small LLM classifiers. A tripped guardrail returns a refusal and is reported in the response.
-- **RAG.** A single vector search per query (`text-embedding-3-small`, cosine similarity via pgvector). Markdown knowledge files are chunked and embedded at startup, with SHA-256 change detection so unchanged files are not re-embedded.
+- **Company knowledge.** The Support agent answers company, pricing, security, and SLA questions from knowledge text inlined in its prompt. A RAG pipeline is also included but is not currently attached to any agent: at startup the markdown files in `backend/src/rag/knowledge/` are chunked and embedded (`text-embedding-3-small`) into Postgres/pgvector, with SHA-256 change detection, and a `search_company_info` tool does a single cosine-similarity search. It was taken off the Support agent in favor of the inlined knowledge.
 - **Observability.** OpenTelemetry traces (including guardrail spans) go to [Arize Phoenix](https://github.com/Arize-ai/phoenix) when `PHOENIX_COLLECTOR_ENDPOINT` is set.
 - **Dev console.** The Next.js frontend shows the chat alongside the active agent, its tools and handoffs, triggered guardrails, and the tool-call events for each turn.
 
@@ -111,7 +109,7 @@ Settings load from environment variables or `.env` (see `backend/src/config.py`)
 ```
 backend/
   src/agent/        supervisor, billing, support agents; guardrails; registry
-  src/rag/          knowledge-base ingestion, search tool, markdown sources
+  src/rag/          knowledge-base ingestion, search tool (not attached to an agent), markdown sources
   src/services/     mock billing and support backends
   src/store/        Redis conversation store, pgvector store
   src/api/          FastAPI app, routes, chat service, middleware
@@ -125,7 +123,7 @@ docker-compose.yml  postgres + pgvector, redis, phoenix, backend, frontend
 
 - No authentication, rate limiting, or CORS configuration on the API. Every chat request makes several paid model calls, so do not expose it publicly.
 - Billing and support backends are in-memory mocks; actions like plan changes and refunds do not persist.
-- RAG is deliberately simple: one vector search with a small `top_k`, so broad questions (for example about pricing tiers) can miss relevant chunks.
+- The RAG pipeline is built and tested but not wired into an agent, so Postgres/pgvector is only used for ingestion. It is deliberately simple (one vector search, small `top_k`), and broad questions such as pricing tiers can miss relevant chunks.
 - Guardrails are LLM classifiers and are probabilistic; they reduce risk but do not eliminate it.
 - Tool-call arguments and outputs are returned to the client for the dev console. A production API should not expose them.
 
