@@ -9,7 +9,7 @@ from agents.items import HandoffOutputItem, ToolCallItem
 from agent.guardrails.message_length import message_length_guardrail
 from agent.guardrails.off_topic import off_topic_guardrail
 from agent.guardrails.prompt_injection import prompt_injection_guardrail
-from agent.registry import build_agent_registry
+from agent.registry import HANDOFF_INPUT_FILTER, build_agent_registry
 from evals.models import EvalCase, ExecutionSummary
 
 
@@ -33,6 +33,7 @@ async def run_case(case: EvalCase) -> ExecutionSummary:
                     starting_agent=supervisor,
                     input=input_,
                     run_config=RunConfig(
+                        handoff_input_filter=HANDOFF_INPUT_FILTER,
                         input_guardrails=[
                             message_length_guardrail,
                             prompt_injection_guardrail,

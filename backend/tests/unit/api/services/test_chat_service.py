@@ -5,6 +5,7 @@ import openai
 import pytest
 from agents import InputGuardrailTripwireTriggered
 
+from agent.registry import HANDOFF_INPUT_FILTER
 from api.schemas.chat import ChatResponse
 from api.schemas.conversation import ConversationState
 from api.services.chat import ChatService, _build_agents_lookup
@@ -101,6 +102,26 @@ async def test_first_turn_passes_string_input(
         await svc.process_message("session-1", "what are your products")
     _, kwargs = mock_run.call_args
     assert kwargs["input"] == "what are your products"
+
+
+async def test_run_config_strips_handoff_history(
+    openai_env, empty_store, mock_registry, mock_run_result
+):
+    """Handoffs must not leak the transfer call into the specialist's history.
+
+    Regression: with the transfer_to_* call visible, the Support agent claimed
+    tickets it never created instead of calling create_ticket.
+    """
+    with patch("api.services.chat.build_agent_registry", return_value=mock_registry):
+        svc = ChatService(store=empty_store)
+    with patch(
+        "api.services.chat.Runner.run",
+        new_callable=AsyncMock,
+        return_value=mock_run_result,
+    ) as mock_run:
+        await svc.process_message("session-1", "I'm getting a 500 error")
+    _, kwargs = mock_run.call_args
+    assert kwargs["run_config"].handoff_input_filter is HANDOFF_INPUT_FILTER
 
 
 # --- Subsequent-turn routing ---
