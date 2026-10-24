@@ -575,7 +575,7 @@ name = "cs-agent"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "arize-phoenix" },
+    { name = "arize-phoenix-otel" },
     { name = "fastapi" },
     { name = "openai" },
     { name = "openai-agents" },
@@ -592,6 +592,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "arize-phoenix" },
     { name = "docker" },
     { name = "fakeredis" },
     { name = "pytest" },
@@ -602,7 +603,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "arize-phoenix", specifier = ">=16.0.0" },
+    { name = "arize-phoenix-otel", specifier = ">=0.16.1" },
     { name = "fastapi", specifier = ">=0.136.0" },
     { name = "openai", specifier = ">=2.32.0" },
     { name = "openai-agents", specifier = ">=0.14.2" },
@@ -619,6 +620,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "arize-phoenix", specifier = ">=16.0.0" },
     { name = "docker", specifier = ">=7.1.0" },
     { name = "fakeredis", specifier = ">=2.35.1" },
     { name = "pytest", specifier = ">=9.0.3" },
