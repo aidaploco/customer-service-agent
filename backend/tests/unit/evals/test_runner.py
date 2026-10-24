@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import openai
 import pytest
 
+from agent.registry import HANDOFF_INPUT_FILTER
 from evals.models import EvalCase, ExecutionSummary
 from evals.runner import run_case
 
@@ -59,6 +60,20 @@ async def test_run_case_success():
     assert summary.input_tokens == 100
     assert summary.output_tokens == 50
     assert summary.error is None
+
+
+async def test_run_case_uses_production_handoff_filter():
+    """Evals must run with the same handoff filter as the API."""
+    with patch("evals.runner.build_agent_registry", return_value=_mock_registry()):
+        with patch(
+            "evals.runner.Runner.run",
+            new_callable=AsyncMock,
+            return_value=_mock_run_result(),
+        ) as mock_run:
+            await run_case(_case())
+
+    _, kwargs = mock_run.call_args
+    assert kwargs["run_config"].handoff_input_filter is HANDOFF_INPUT_FILTER
 
 
 async def test_run_case_multi_message_input():

@@ -15,7 +15,7 @@ from agent.guardrails.responses import (
     log_guardrail_trip,
     refusal_message,
 )
-from agent.registry import build_agent_registry
+from agent.registry import HANDOFF_INPUT_FILTER, build_agent_registry
 from api.schemas.chat import AgentEvent, AgentInfo, ChatResponse, GuardrailResult
 from store.base import BaseConversationStore
 from utils.logger import get_logger
@@ -137,6 +137,7 @@ class ChatService:
                     input=input_,
                     run_config=RunConfig(
                         group_id=session_id,
+                        handoff_input_filter=HANDOFF_INPUT_FILTER,
                         input_guardrails=[
                             message_length_guardrail,
                             prompt_injection_guardrail,
