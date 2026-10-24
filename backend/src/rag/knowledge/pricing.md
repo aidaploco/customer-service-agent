@@ -37,7 +37,7 @@ For companies with compliance requirements, high volume, or dedicated support ne
 - SSO / SAML support
 - SOC 2 Type II audit reports on request
 - 99.99% uptime SLA
-- Dedicated Slack channel with your Customer Success Manager
+- Dedicated chat channel with your Customer Success Manager
 - Custom data retention and export
 
 Contact sales@brightloop.io for Enterprise pricing.

@@ -28,8 +28,8 @@ Credits must be requested within 30 days of the incident. They apply to future i
 |------|---------|--------------|
 | Starter | Email | 48 business hours |
 | Pro | Email + Chat | 8 business hours |
-| Enterprise | Dedicated Slack + Email | 1 business hour (P1 incidents) |
+| Enterprise | Dedicated chat + Email | 1 business hour (P1 incidents) |
 
 ## Incident Communication
 
-Brightloop communicates incidents via the status page (status.brightloop.io) and email alerts for customers who subscribe. Enterprise customers also receive direct Slack notifications from their Customer Success Manager.
+Brightloop communicates incidents via the status page (status.brightloop.io) and email alerts for customers who subscribe. Enterprise customers also receive direct chat notifications from their Customer Success Manager.

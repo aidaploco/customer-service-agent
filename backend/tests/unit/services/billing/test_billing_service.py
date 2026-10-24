@@ -2,7 +2,7 @@ import pytest
 
 from services.billing.service import BillingService
 
-_KNOWN_EMAIL = "alice@acme.com"
+_KNOWN_EMAIL = "alice@example.com"
 _UNKNOWN_EMAIL = "nobody@unknown.com"
 
 

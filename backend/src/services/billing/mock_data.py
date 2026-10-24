@@ -6,21 +6,21 @@ Replace this module's contents with real service calls when the backend exists.
 PLANS: list[str] = ["Starter", "Pro", "Business", "Enterprise"]
 
 SUBSCRIPTIONS: dict[str, dict] = {
-    "alice@acme.com": {
+    "alice@example.com": {
         "plan": "Pro",
         "seats": 15,
         "amount_usd": 149,
         "renewal_date": "2026-06-01",
         "status": "active",
     },
-    "bob@startup.io": {
+    "bob@example.org": {
         "plan": "Starter",
         "seats": 3,
         "amount_usd": 49,
         "renewal_date": "2026-05-15",
         "status": "active",
     },
-    "carol@enterprise.com": {
+    "carol@example.net": {
         "plan": "Business",
         "seats": 80,
         "amount_usd": 399,
@@ -30,7 +30,7 @@ SUBSCRIPTIONS: dict[str, dict] = {
 }
 
 INVOICES: dict[str, list[dict]] = {
-    "alice@acme.com": [
+    "alice@example.com": [
         {
             "id": "INV-2026-004",
             "date": "2026-05-01",
@@ -50,7 +50,7 @@ INVOICES: dict[str, list[dict]] = {
             "status": "paid",
         },
     ],
-    "bob@startup.io": [
+    "bob@example.org": [
         {
             "id": "INV-2026-005",
             "date": "2026-05-01",
@@ -64,7 +64,7 @@ INVOICES: dict[str, list[dict]] = {
             "status": "paid",
         },
     ],
-    "carol@enterprise.com": [
+    "carol@example.net": [
         {
             "id": "INV-2026-006",
             "date": "2026-05-01",
