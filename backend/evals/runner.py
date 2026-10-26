@@ -20,7 +20,7 @@ def _registry():
 
 async def run_case(case: EvalCase) -> ExecutionSummary:
     registry = _registry()
-    supervisor = registry["Supervisor"]
+    starting_agent = registry[case.start_agent]
 
     input_ = case.messages if len(case.messages) > 1 else case.messages[0]["content"]
 
@@ -30,7 +30,7 @@ async def run_case(case: EvalCase) -> ExecutionSummary:
         for attempt in range(3):
             try:
                 result = await Runner.run(
-                    starting_agent=supervisor,
+                    starting_agent=starting_agent,
                     input=input_,
                     run_config=RunConfig(
                         handoff_input_filter=HANDOFF_INPUT_FILTER,

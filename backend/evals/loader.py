@@ -23,6 +23,7 @@ def load_cases(
             case = EvalCase(
                 id=item["id"],
                 messages=item["messages"],
+                start_agent=item.get("start_agent", "Supervisor"),
                 expected_agent=item.get("expected_agent"),
                 expected_tools=item.get("expected_tools"),
                 expected_guardrails=item.get("expected_guardrails"),

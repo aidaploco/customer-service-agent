@@ -85,3 +85,21 @@
       content: "Hello, I'm a new customer"
   expected_agent: Supervisor
   quality_prompt: "Response should be a warm, professional greeting that invites the customer to ask their question."
+
+# A session already on Support must still reach Billing for account questions.
+- id: support_hands_back_plan_question
+  start_agent: Support
+  messages:
+    - role: user
+      content: "What plan am I on? My email is alice@example.com"
+  expected_agent: Billing
+  expected_tools: [get_subscription]
+  quality_prompt: "Response should state the customer's current plan from their account. It must NOT say it lacks access to account information."
+
+- id: support_hands_back_invoice_question
+  start_agent: Support
+  messages:
+    - role: user
+      content: "Can you show me my latest invoices? Email is bob@example.org"
+  expected_agent: Billing
+  expected_tools: [get_invoice_history]

@@ -5,6 +5,9 @@ from dataclasses import dataclass, field
 class EvalCase:
     id: str
     messages: list[dict]
+    start_agent: str = (
+        "Supervisor"  # agent that handles the first turn, like a resumed session
+    )
     expected_agent: str | None = None
     expected_tools: list[str] | None = None  # ordered-subset match
     expected_guardrails: list[str] | None = None
