@@ -4,6 +4,10 @@ A multi-agent customer service assistant built on the [OpenAI Agents SDK](https:
 
 > **This is a demo project.** "Brightloop" (a webhook-delivery SaaS) and its persona "Zara" are fictional. All customer data, invoices, tickets, and knowledge-base content are invented mock data, and the billing tools act on an email address with no authentication. It is not meant to be deployed as-is.
 
+![The dev console: a conversation that starts with Billing and ends with Support, with the agents, guardrails, tool calls and session state shown alongside](docs/dev-console.png)
+
+The dev console after a billing question followed by a platform-status question: the conversation was handed off from Billing to Support, and the Runner Output panel shows the `get_system_status` tool call and its result.
+
 ## How it works
 
 ```mermaid
