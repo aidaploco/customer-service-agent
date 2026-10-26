@@ -64,7 +64,7 @@ uv run uvicorn api.app:app --app-dir src --reload
 
 ```bash
 cd backend
-uv run pytest tests/unit          # 274 unit tests, no network needed
+uv run pytest tests/unit          # no network needed
 uv run pytest tests/integration   # needs Redis
 uv run ruff check src tests && uv run ruff format --check src tests
 ```
@@ -119,7 +119,7 @@ docker-compose.yml  redis, phoenix, backend, frontend
 ## Known limitations
 
 - No authentication, rate limiting, or CORS configuration on the API. Every chat request makes several paid model calls, so do not expose it publicly.
-- Billing and support backends are in-memory mocks; actions like plan changes and refunds do not persist.
+- Billing and support backends are in-memory mocks; actions like plan changes and refunds do not persist, and a created ticket gets an ID but is not stored, so it cannot be looked up afterwards.
 - Company knowledge is loaded whole into Support's prompt. That is right for about 1,100 words but would not scale to a large knowledge base, where retrieval would become worthwhile.
 - Guardrails are LLM classifiers and are probabilistic; they reduce risk but do not eliminate it.
 - Tool-call arguments and outputs are returned to the client for the dev console. A production API should not expose them.

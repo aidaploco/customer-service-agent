@@ -38,7 +38,8 @@ class TestCreateTicket:
 
     def test_each_ticket_gets_unique_id(self, service):
         ids = {
-            service.create_ticket("u@x.com", "s", "d")["ticket_id"] for _ in range(20)
+            service.create_ticket("u@example.com", "s", "d")["ticket_id"]
+            for _ in range(20)
         }
         assert len(ids) > 1
 

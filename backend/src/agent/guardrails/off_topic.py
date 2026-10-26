@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from html import escape
 from textwrap import dedent
 
 from agents import (
@@ -79,10 +80,13 @@ async def off_topic_guardrail(
     if not message:
         return GuardrailFunctionOutput(output_info=None, tripwire_triggered=False)
 
+    # Escape user-controlled text so it cannot close the tags that delimit it.
     context_block = (
-        f"<conversation>\n{conversation}\n</conversation>\n" if conversation else ""
+        f"<conversation>\n{escape(conversation, quote=False)}\n</conversation>\n"
+        if conversation
+        else ""
     )
-    prompt = f"{context_block}<msg>{message}</msg>"
+    prompt = f"{context_block}<msg>{escape(message, quote=False)}</msg>"
     result = await Runner.run(
         starting_agent=_get_off_topic_agent(),
         input=prompt,
