@@ -12,7 +12,7 @@ services:
       retries: 5
 
   phoenix:
-    image: arizephoenix/phoenix:latest
+    image: arizephoenix/phoenix:version-16.0.0
     ports:
       - "6006:6006"
       - "4317:4317"
@@ -46,7 +46,7 @@ services:
       - backend
 
   redisinsight:
-    image: redis/redisinsight:latest
+    image: redis/redisinsight:3.8.0
     ports:
       - "5540:5540"
     volumes:
