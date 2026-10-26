@@ -76,6 +76,24 @@ async def test_run_case_uses_production_handoff_filter():
     assert kwargs["run_config"].handoff_input_filter is HANDOFF_INPUT_FILTER
 
 
+async def test_run_case_starts_at_the_cases_start_agent():
+    """A case can resume on a specialist, the way a stored session does."""
+    registry = _mock_registry()
+    registry["Support"] = MagicMock()
+    case = _case()
+    case.start_agent = "Support"
+
+    with patch("evals.runner.build_agent_registry", return_value=registry):
+        with patch(
+            "evals.runner.Runner.run",
+            new_callable=AsyncMock,
+            return_value=_mock_run_result(),
+        ) as mock_run:
+            await run_case(case)
+
+    assert mock_run.call_args.kwargs["starting_agent"] is registry["Support"]
+
+
 async def test_run_case_multi_message_input():
     messages = [
         {"role": "user", "content": "Hello"},

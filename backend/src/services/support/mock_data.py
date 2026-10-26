@@ -3,6 +3,8 @@ Mock data standing in for a real support API and knowledge base.
 Replace this module's contents with real service calls when the backend exists.
 """
 
+from datetime import date, datetime, timedelta, timezone
+
 SYSTEM_STATUS: dict = {
     "overall": "operational",
     "components": {
@@ -16,7 +18,9 @@ SYSTEM_STATUS: dict = {
         {
             "id": "INC-2026-012",
             "title": "Webhook delivery delays",
-            "started": "2026-05-01T09:15:00Z",
+            "started": (datetime.now(timezone.utc) - timedelta(hours=3)).strftime(
+                "%Y-%m-%dT%H:%M:%SZ"
+            ),
             "severity": "minor",
             "update": "Our team is investigating increased latency in webhook delivery. Other services are unaffected.",
         }
@@ -27,13 +31,13 @@ TICKETS: dict[str, dict] = {
     "BL-10001": {
         "subject": "API rate limiting issue",
         "status": "in_progress",
-        "created": "2026-04-28",
+        "created": (date.today() - timedelta(days=9)).isoformat(),
         "assigned_to": "Tier 2 Support",
     },
     "BL-10002": {
         "subject": "Webhook configuration question",
         "status": "resolved",
-        "created": "2026-04-25",
+        "created": (date.today() - timedelta(days=12)).isoformat(),
         "resolution": "Webhook endpoint URL was missing the trailing slash. Updated and confirmed working.",
     },
 }
